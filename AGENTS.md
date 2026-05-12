@@ -53,6 +53,9 @@ npm run dev    # Start dev server on localhost:5173
 npm run build  # Production build to dist/
 ```
 
+**Pushed to GitHub:** https://github.com/Sydaveu/Pds-hub.git ✅
+- Initial commit: 39 files, 7596 lines
+
 **Ready for:**
 - Deployment (Vercel, Netlify, etc.)
 - Adding Supabase backend
