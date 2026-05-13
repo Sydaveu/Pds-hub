@@ -10,7 +10,8 @@ export interface FarmAsset {
   keywords: string[];
 }
 
-const CDN = (id: string) => `https://images.unsplash.com/photo-${id}?w=400&q=80`;
+const PICSUM = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/400/300`;
+const PICSUM_LG = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`;
 const LOCAL = (era: string, file: string) => `/assets/${era}/${file}`;
 
 export const farmAssets: FarmAsset[] = [
@@ -94,7 +95,7 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['okra', 'fresh okra', 'native vegetable', 'traditional soup'],
   },
   {
-    id: 'nf-12', name: 'Bitter Leaf', category: 'food', era: 'native',
+    id: 'nf-12', name: 'Bitter Leaf Greens', category: 'food', era: 'native',
     description: 'Fresh bitter leaf greens for traditional African soups',
     alt: 'bitter-leaf', unsplashId: '1540420773420-3366772f4999',
     localPath: LOCAL('native', 'bitter-leaf.jpg'),
@@ -110,7 +111,7 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['goat', 'native goat', 'local goat', 'west african goat', 'dwarf goat'],
   },
   {
-    id: 'na-02', name: 'Native Sheep', category: 'animal', era: 'native',
+    id: 'na-02', name: 'Native Sheep Flock', category: 'animal', era: 'native',
     description: 'Traditional sheep reared for meat and wool in local farms',
     alt: 'sheep', unsplashId: '1589923188900-85dae523342b',
     localPath: LOCAL('native', 'sheep.jpg'),
@@ -124,14 +125,14 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['chicken', 'native chicken', 'free range', 'local fowl'],
   },
   {
-    id: 'na-04', name: 'Local Cow', category: 'animal', era: 'native',
+    id: 'na-04', name: 'White Fulani Cattle', category: 'animal', era: 'native',
     description: 'White Fulani cattle, traditional breed for milk and meat',
     alt: 'cow', unsplashId: '1570042225831-d98fa7577f1e',
     localPath: LOCAL('native', 'cow.jpg'),
     keywords: ['cow', 'native cow', 'fulani cattle', 'local cattle'],
   },
   {
-    id: 'na-05', name: 'Local Pig', category: 'animal', era: 'native',
+    id: 'na-05', name: 'Native Pig', category: 'animal', era: 'native',
     description: 'Native breed pig reared in traditional farming systems',
     alt: 'pig', unsplashId: '1589923188900-85dae523342b',
     localPath: LOCAL('native', 'pig.jpg'),
@@ -168,8 +169,8 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['hoe', 'traditional hoe', 'hand hoe', 'farming hoe', 'native tool'],
   },
   {
-    id: 'nt-02', name: 'Machete / Cutlass', category: 'tool', era: 'native',
-    description: 'Sharp steel cutlass for clearing brush and harvesting',
+    id: 'nt-02', name: 'Farm Cutlass', category: 'tool', era: 'native',
+    description: 'Sharp steel cutlass for clearing brush and harvesting crops',
     alt: 'cutlass', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('native', 'cutlass.jpg'),
     keywords: ['cutlass', 'machete', 'brush clearing', 'harvesting tool', 'native tool'],
@@ -280,21 +281,21 @@ export const farmAssets: FarmAsset[] = [
 
   // -- MODERN ANIMALS --
   {
-    id: 'ma-01', name: 'Poultry Farm Broilers', category: 'animal', era: 'modern',
+    id: 'ma-01', name: 'Broiler Poultry House', category: 'animal', era: 'modern',
     description: 'Modern broiler chicken production in climate-controlled houses',
     alt: 'broiler-chicks', unsplashId: '1548550023-2bdb3c5beed7',
     localPath: LOCAL('modern', 'broiler-farm.jpg'),
     keywords: ['broiler', 'poultry farm', 'modern chicken', 'commercial poultry'],
   },
   {
-    id: 'ma-02', name: 'Fish Farm Tilapia', category: 'animal', era: 'modern',
+    id: 'ma-02', name: 'Tilapia Fish Farm', category: 'animal', era: 'modern',
     description: 'Modern tilapia farming in controlled pond systems',
     alt: 'tilapia', unsplashId: '1578575437130-527eed3abbec',
     localPath: LOCAL('modern', 'fish-farm.jpg'),
     keywords: ['tilapia', 'fish farm', 'aquaculture', 'modern fish farming'],
   },
   {
-    id: 'ma-03', name: 'Dairy Cattle Farm', category: 'animal', era: 'modern',
+    id: 'ma-03', name: 'Dairy Cattle Herd', category: 'animal', era: 'modern',
     description: 'Modern dairy farm with automated milking systems',
     alt: 'dairy-cow', unsplashId: '1570042225831-d98fa7577f1e',
     localPath: LOCAL('modern', 'dairy-farm.jpg'),
@@ -308,7 +309,7 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['pig', 'piggery', 'modern pig farming', 'commercial pig'],
   },
   {
-    id: 'ma-05', name: 'Turkey Farm', category: 'animal', era: 'modern',
+    id: 'ma-05', name: 'Turkey Production', category: 'animal', era: 'modern',
     description: 'Commercial turkey production for meat market',
     alt: 'turkey', unsplashId: '1548550023-2bdb3c5beed7',
     localPath: LOCAL('modern', 'turkey-farm.jpg'),
@@ -331,7 +332,7 @@ export const farmAssets: FarmAsset[] = [
     keywords: ['harvester', 'combine harvester', 'modern harvester', 'grain harvest machine'],
   },
   {
-    id: 'mt-03', name: 'Irrigation System', category: 'tool', era: 'modern',
+    id: 'mt-03', name: 'Sprinkler Irrigation', category: 'tool', era: 'modern',
     description: 'Modern sprinkler irrigation system for efficient water management',
     alt: 'irrigation', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'irrigation.jpg'),
@@ -346,7 +347,7 @@ export const farmAssets: FarmAsset[] = [
   },
   {
     id: 'mt-05', name: 'Agriculture Drone', category: 'tool', era: 'modern',
-    description: 'Modern drone for crop monitoring, spraying and mapping',
+    description: 'Modern drone for crop monitoring, spraying and aerial mapping',
     alt: 'drone', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'drone.jpg'),
     keywords: ['drone', 'agriculture drone', 'crop monitoring', 'precision farming'],
@@ -361,42 +362,42 @@ export const farmAssets: FarmAsset[] = [
 
   // -- MODERN UTILITIES --
   {
-    id: 'mu-01', name: 'Solar Panel System', category: 'utility', era: 'modern',
+    id: 'mu-01', name: 'Solar Panel Array', category: 'utility', era: 'modern',
     description: 'Modern solar panel array for farm energy independence',
     alt: 'solar-panel', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'solar-panel.jpg'),
     keywords: ['solar panel', 'solar energy', 'farm power', 'renewable energy'],
   },
   {
-    id: 'mu-02', name: 'Cold Storage Room', category: 'utility', era: 'modern',
+    id: 'mu-02', name: 'Cold Storage Unit', category: 'utility', era: 'modern',
     description: 'Modern cold storage for preserving harvested produce',
     alt: 'cold-storage', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'cold-storage.jpg'),
     keywords: ['cold storage', 'cold room', 'produce preservation', 'refrigeration'],
   },
   {
-    id: 'mu-03', name: 'Water Pump', category: 'utility', era: 'modern',
+    id: 'mu-03', name: 'Submersible Water Pump', category: 'utility', era: 'modern',
     description: 'Modern submersible water pump for irrigation and borehole',
     alt: 'water-pump', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'water-pump.jpg'),
     keywords: ['water pump', 'submersible pump', 'irrigation pump', 'borehole'],
   },
   {
-    id: 'mu-04', name: 'Egg Incubator', category: 'utility', era: 'modern',
+    id: 'mu-04', name: 'Automatic Egg Incubator', category: 'utility', era: 'modern',
     description: 'Automatic egg incubator with digital temperature control',
     alt: 'incubator', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'incubator.jpg'),
     keywords: ['incubator', 'egg incubator', 'hatching machine', 'poultry equipment'],
   },
   {
-    id: 'mu-05', name: 'Packaging Machine', category: 'utility', era: 'modern',
+    id: 'mu-05', name: 'Packaging Sealer', category: 'utility', era: 'modern',
     description: 'Automatic sealing and packaging machine for farm products',
     alt: 'packaging-machine', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'packaging-machine.jpg'),
     keywords: ['packaging machine', 'sealer', 'farm packaging', 'food processing'],
   },
   {
-    id: 'mu-06', name: 'Weighing Scale', category: 'utility', era: 'modern',
+    id: 'mu-06', name: 'Digital Weighing Scale', category: 'utility', era: 'modern',
     description: 'Digital platform weighing scale for farm produce measurement',
     alt: 'weighing-scale', unsplashId: '1597848212624-a19eb35e2651',
     localPath: LOCAL('modern', 'weighing-scale.jpg'),
@@ -420,11 +421,11 @@ export const assetCategories = [
 ] as const;
 
 export function getAssetImageUrl(asset: FarmAsset): string {
-  return `https://images.unsplash.com/photo-${asset.unsplashId}?w=400&q=80`;
+  return PICSUM(asset.id + '-' + asset.alt);
 }
 
 export function getAssetImageLarge(asset: FarmAsset): string {
-  return `https://images.unsplash.com/photo-${asset.unsplashId}?w=800&q=80`;
+  return PICSUM_LG(asset.id + '-' + asset.alt);
 }
 
 export function searchFarmAssets(query: string, maxResults = 8): FarmAsset[] {
