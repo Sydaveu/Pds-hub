@@ -18,6 +18,7 @@ const About = lazy(() => import('./pages/About').then((m) => ({ default: m.About
 const Login = lazy(() => import('./pages/Login').then((m) => ({ default: m.Login })));
 const AiAssistantPage = lazy(() => import('./pages/AiAssistantPage').then((m) => ({ default: m.AiAssistantPage })));
 const FarmAssets = lazy(() => import('./pages/FarmAssets').then((m) => ({ default: m.FarmAssets })));
+const PiCalculator = lazy(() => import('./pages/PiCalculator').then((m) => ({ default: m.PiCalculator })));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -41,6 +42,7 @@ function AppRoutes() {
             <Route path="/categories" element={<Suspense fallback={<LoadingFallback type="grid" count={4} />}><Categories /></Suspense>} />
             <Route path="/product-details/:id" element={<Suspense fallback={<LoadingFallback type="product-card" />}><ProductDetails /></Suspense>} />
             <Route path="/farm-assets" element={<Suspense fallback={<LoadingFallback type="grid" count={4} />}><FarmAssets /></Suspense>} />
+            <Route path="/pi-calculator" element={<Suspense fallback={<LoadingFallback type="grid" count={4} />}><PiCalculator /></Suspense>} />
             <Route path="/about" element={<Suspense fallback={<LoadingFallback type="grid" count={3} />}><About /></Suspense>} />
             <Route path="/login" element={<Suspense fallback={<LoadingFallback type="grid" count={1} />}><Login /></Suspense>} />
             <Route path="/cart" element={<ProtectedRoute><Suspense fallback={<LoadingFallback type="grid" count={2} />}><Cart /></Suspense></ProtectedRoute>} />

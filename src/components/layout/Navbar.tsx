@@ -23,6 +23,7 @@ export function Navbar() {
     { to: '/marketplace', label: 'Marketplace' },
     { to: '/categories', label: 'Categories' },
     { to: '/farm-assets', label: 'Farm Assets' },
+    { to: '/pi-calculator', label: 'Pi Calculator' },
     { to: '/about', label: 'About' },
   ];
 
