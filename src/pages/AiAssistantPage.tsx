@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Send, Bot, ArrowLeft, RefreshCw, Sparkles, ExternalLink, Trash2, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateGeminiResponse, isGeminiConfigured } from '../lib/gemini';
+import { getProductImage } from '../lib/productImages';
 
 interface ChatMessage {
   id: string;
@@ -40,51 +41,51 @@ function loadContext(): ChatContext {
 
 const PRODUCT_IMAGES: Record<string, { url: string; caption: string }[]> = {
   rice: [
-    { url: 'https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=400&q=80', caption: 'Premium Long Grain Rice (25kg) — 15\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80', caption: 'Basmathi Rice (10kg) — 8\u03c0' },
+    { url: getProductImage('long-grain-rice'), caption: 'Premium Long Grain Rice (25kg) \u2014 15\u03c0' },
+    { url: getProductImage('basmati-rice'), caption: 'Basmathi Rice (10kg) \u2014 8\u03c0' },
   ],
   beans: [
-    { url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&q=80', caption: 'Black Eyed Beans (2kg) — 5\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&q=80', caption: 'Mixed Legumes Pack — 7\u03c0' },
+    { url: getProductImage('black-eyed-beans'), caption: 'Black Eyed Beans (2kg) \u2014 5\u03c0' },
+    { url: getProductImage('kidney-beans'), caption: 'Mixed Legumes Pack \u2014 7\u03c0' },
   ],
   vegetables: [
-    { url: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&q=80', caption: 'Fresh Organic Carrots (3kg) — 6\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400&q=80', caption: 'Plum Tomatoes (2kg) — 4\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1556801712-76c8eb07bbc9?w=400&q=80', caption: 'Fresh Bell Peppers (1kg) — 5\u03c0' },
+    { url: getProductImage('carrots'), caption: 'Fresh Organic Carrots (3kg) \u2014 6\u03c0' },
+    { url: getProductImage('tomatoes'), caption: 'Plum Tomatoes (2kg) \u2014 4\u03c0' },
+    { url: getProductImage('bell-peppers'), caption: 'Fresh Bell Peppers (1kg) \u2014 5\u03c0' },
   ],
   fruits: [
-    { url: 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=400&q=80', caption: 'Sweet Mangoes (10pcs) — 12\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=400&q=80', caption: 'Fresh Pineapples (3pcs) — 9\u03c0' },
+    { url: getProductImage('mangoes'), caption: 'Sweet Mangoes (10pcs) \u2014 12\u03c0' },
+    { url: getProductImage('pineapples'), caption: 'Fresh Pineapples (3pcs) \u2014 9\u03c0' },
   ],
   livestock: [
-    { url: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?w=400&q=80', caption: 'Healthy Goat (medium) — 150\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=400&q=80', caption: 'Mature Bull — 300\u03c0' },
+    { url: getProductImage('goat'), caption: 'Healthy Goat (medium) \u2014 150\u03c0' },
+    { url: getProductImage('cow'), caption: 'Mature Bull \u2014 300\u03c0' },
   ],
   poultry: [
-    { url: 'https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&q=80', caption: 'Live Broiler Chicken (2kg+) — 12\u03c0' },
+    { url: getProductImage('chicken'), caption: 'Live Broiler Chicken (2kg+) \u2014 12\u03c0' },
   ],
   fishery: [
-    { url: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=400&q=80', caption: 'Fresh Tilapia (5kg) — 35\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=400&q=80', caption: 'Live Catfish (3kg) — 25\u03c0' },
+    { url: getProductImage('tilapia'), caption: 'Fresh Tilapia (5kg) \u2014 35\u03c0' },
+    { url: getProductImage('catfish'), caption: 'Live Catfish (3kg) \u2014 25\u03c0' },
   ],
   honey: [
-    { url: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&q=80', caption: 'Natural Wildflower Honey (500ml) — 15\u03c0' },
+    { url: getProductImage('honey'), caption: 'Natural Wildflower Honey (500ml) \u2014 15\u03c0' },
   ],
   dairy: [
-    { url: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=400&q=80', caption: 'Fresh Cow Milk (10L) — 20\u03c0' },
+    { url: getProductImage('milk'), caption: 'Fresh Cow Milk (10L) \u2014 20\u03c0' },
   ],
   seeds: [
-    { url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&q=80', caption: 'Hybrid Maize Seeds (5kg) — 15\u03c0' },
+    { url: getProductImage('maize-seeds'), caption: 'Hybrid Maize Seeds (5kg) \u2014 15\u03c0' },
   ],
   tools: [
-    { url: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=400&q=80', caption: 'Premium Garden Hoe — 8\u03c0' },
+    { url: getProductImage('farm-tools'), caption: 'Premium Garden Hoe \u2014 8\u03c0' },
   ],
   maize: [
-    { url: 'https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?w=400&q=80', caption: 'Yellow Maize (50kg bag) — 18\u03c0' },
-    { url: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&q=80', caption: 'Fresh Corn on the Cob (10pcs) — 12\u03c0' },
+    { url: getProductImage('maize'), caption: 'Yellow Maize (50kg bag) \u2014 18\u03c0' },
+    { url: getProductImage('corn-cob'), caption: 'Fresh Corn on the Cob (10pcs) \u2014 12\u03c0' },
   ],
   yam: [
-    { url: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400&q=80', caption: 'Fresh Yam Tubers (per piece) — 8\u03c0' },
+    { url: getProductImage('yam'), caption: 'Fresh Yam Tubers (per piece) \u2014 8\u03c0' },
   ],
 };
 

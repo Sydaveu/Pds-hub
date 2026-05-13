@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { getProductImage } from '../../lib/productImages';
 
-const FALLBACK_IMG = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&q=80';
+const FALLBACK_IMG = getProductImage('default');
 
 export function ProductImage({
   src,

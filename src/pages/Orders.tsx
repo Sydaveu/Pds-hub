@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { ProductImage } from '../components/ui/ProductImage';
+import { getProductImage } from '../lib/productImages';
 
 interface OrderItem {
   id: string;
@@ -42,7 +43,7 @@ const mockOrders: Order[] = [
         name: 'Premium Long Grain Rice (25kg)',
         price: 15,
         quantity: 2,
-        image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80'
+        image: getProductImage('long-grain-rice')
       }
     ],
     shippingAddress: {
@@ -66,14 +67,14 @@ const mockOrders: Order[] = [
         name: 'Fresh Organic Beans',
         price: 20,
         quantity: 1,
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80'
+        image: getProductImage('beans')
       },
       {
         id: '3',
         name: 'Yellow Maize (Corn)',
         price: 18,
         quantity: 1,
-        image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=400&q=80'
+        image: getProductImage('maize')
       }
     ],
     shippingAddress: {
@@ -96,14 +97,14 @@ const mockOrders: Order[] = [
         name: 'Fresh Tomatoes (5kg box)',
         price: 12,
         quantity: 1,
-        image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=400&q=80'
+        image: getProductImage('tomatoes')
       },
       {
         id: '5',
         name: 'Organic Carrots (3kg)',
         price: 10,
         quantity: 1,
-        image: 'https://images.unsplash.com/photo-1591876323328-770d49ba3955?auto=format&fit=crop&w=400&q=80'
+        image: getProductImage('carrots')
       }
     ],
     shippingAddress: {
