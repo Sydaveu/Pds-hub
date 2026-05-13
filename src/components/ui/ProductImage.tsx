@@ -1,22 +1,34 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getProductImage } from '../../lib/productImages';
-
-const FALLBACK_IMG = getProductImage('default');
+import { getProductImage, getFallbackImage } from '../../lib/productImages';
 
 export function ProductImage({
   src,
   alt,
   className = '',
   large = false,
+  imgClassName = '',
 }: {
   src: string;
   alt: string;
   className?: string;
   large?: boolean;
+  imgClassName?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+
+  const handleError = () => {
+    if (!fallbackSrc) {
+      const kw = alt.toLowerCase().split(' ').slice(0, 2).join('-');
+      setFallbackSrc(getProductImage(kw));
+    } else {
+      setError(true);
+    }
+  };
+
+  const displaySrc = error ? getFallbackImage() : (fallbackSrc || src);
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
@@ -26,15 +38,15 @@ export function ProductImage({
         </div>
       )}
       <motion.img
-        src={error ? FALLBACK_IMG : src}
+        src={displaySrc}
         alt={alt}
         loading="lazy"
         initial={{ opacity: 0 }}
         animate={{ opacity: loaded || error ? 1 : 0 }}
         transition={{ duration: 0.3 }}
         onLoad={() => setLoaded(true)}
-        onError={() => setError(true)}
-        className={`w-full h-full object-cover ${!loaded && !error ? 'invisible' : ''}`}
+        onError={handleError}
+        className={`w-full h-full object-cover ${!loaded && !error ? 'invisible' : ''} ${imgClassName}`}
       />
     </div>
   );

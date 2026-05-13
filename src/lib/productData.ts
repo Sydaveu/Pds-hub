@@ -16,8 +16,10 @@ export interface Product {
   searchTags: string[];
 }
 
+import { getProductImage } from './productImages';
+
 const PI = '\u03c0';
-const IMG = (kw: string) => `https://source.unsplash.com/featured/?${encodeURIComponent(kw)}&w=400&q=80`;
+const IMG = (kw: string) => getProductImage(kw);
 
 export const allProducts: Product[] = [
   // ═══════════════════════════════════════════

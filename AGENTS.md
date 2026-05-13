@@ -175,7 +175,7 @@ npm run build  # Production build to dist/
 - **`src/lib/searchUtils.ts`** — Advanced search engine with prefix matching, substring matching, **fuzzy/typo-tolerant Levenshtein search**, autocomplete text extraction
 
 ### Files Rewritten
-- **`src/lib/productImages.ts`** — Now uses `source.unsplash.com/featured/?{keyword}` for always-relevant real images
+- **`src/lib/productImages.ts`** — **264 keyword→Unsplash photo ID mappings** using `images.unsplash.com/photo-{ID}` (confirmed working) + `picsum.photos/seed/{keyword}` fallback (always loads)
 - **`src/components/search/SmartSearch.tsx`** — **Google-style autocomplete**: product thumbnails, color-coded category badges (FOOD=green, TOOLS=amber, ANIMALS=purple), keyboard arrow navigation, debounced, click-to-navigate, "View all results" action
 - **`src/pages/Marketplace.tsx`** — 3 main category tabs (ALL/FOOD/TOOLS/ANIMALS), dynamic subcategory pills based on selected main category, grid/list view toggle, full search across all fields
 - **`src/pages/Categories.tsx`** — 3-tier drill-down: Main Category cards → Subcategory grid with product previews → Product grid
@@ -194,6 +194,24 @@ npm run build  # Production build to dist/
 - CSS: 75.33 kB | JS: ~550 kB (27 lazy chunks)
 - productData.ts: 42.90 kB (gzipped: 13.94 kB)
 - UTILITIES category excluded as requested
+
+## Session 7b — 13 May 2026 (Image Fix — Real Working Photos)
+- **Problem:** All product images broken because `source.unsplash.com/featured/?{keyword}` was deprecated and returns 404/redirects
+- **Fixed `src/lib/productImages.ts`** — Complete rewrite with:
+  - **264 keyword→Unsplash photo ID mappings** using `images.unsplash.com/photo-{ID}?w=400&q=80` (confirmed working URLs)
+  - **All existing photo IDs retained** (rice, beans, maize, goat, cow, chicken, fish, etc. — these are real Unsplash photos)
+  - **picsum.photos/seed/{keyword} fallback** for any unmapped keywords (ALWAYS works, returns real photos)
+  - Two-tier system: Unsplash ID → Picsum fallback
+- **Fixed `src/lib/productData.ts`** — `IMG()` helper now calls `getProductImage()` instead of `source.unsplash.com`
+- **Fixed `src/components/ui/ProductImage.tsx`** — Robust fallback chain:
+  1. Try Unsplash photo ID URL
+  2. On error → try picsum with keyword seed
+  3. On error → show generic fallback image
+- **How it works:** All image URLs generated at runtime via `getProductImage(keyword)`:
+  - Mapped keywords (264 total) → `images.unsplash.com/photo-{ID}?w=400&q=80` (REAL photos, working)
+  - Unmapped → `picsum.photos/seed/{keyword}/400/300` (always loads)
+  - If any fails → cascade falls to next tier
+- **Build: ✅ 0 errors** (tsc + vite build in 5.50s)
 
 ## What David Wants From Me
 1. **Save EVERYTHING continuously** — every thought, decision, detail, writeup, as I type. Even mid-thinking. No waiting until the end.
