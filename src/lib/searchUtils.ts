@@ -1,4 +1,5 @@
 import { allProducts, type Product } from './productData';
+import { farmAssets, type FarmAsset } from '../data/farmAssets';
 
 function levenshtein(a: string, b: string): number {
   const m = a.length, n = b.length;
@@ -105,4 +106,53 @@ export function getAutocompleteSuggestions(query: string, maxResults = 6): { tex
   }
 
   return results.slice(0, maxResults);
+}
+
+export interface FarmAssetSearchResult {
+  asset: FarmAsset;
+  score: number;
+}
+
+export function searchFarmAssets(query: string, maxResults = 4): FarmAssetSearchResult[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  const results: FarmAssetSearchResult[] = [];
+  const seen = new Set<string>();
+  for (const asset of farmAssets) {
+    if (seen.has(asset.id)) continue;
+    const searchable = [
+      asset.name.toLowerCase(),
+      asset.category.toLowerCase(),
+      asset.era.toLowerCase(),
+      asset.description.toLowerCase(),
+      ...asset.keywords.map(k => k.toLowerCase()),
+    ];
+    let bestScore = Infinity;
+    for (const text of searchable) {
+      if (text === q || text.startsWith(q)) { bestScore = 1; break; }
+      if (text.includes(q)) { if (bestScore > 2) bestScore = 2; }
+    }
+    if (bestScore < 5) {
+      seen.add(asset.id);
+      results.push({ asset, score: bestScore });
+      if (results.length >= maxResults) break;
+    }
+  }
+  return results.sort((a, b) => a.score - b.score);
+}
+
+export function getFarmAssetAutocompleteSuggestions(query: string, maxResults = 3): { text: string; era: string; category: string }[] {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  const seen = new Set<string>();
+  const results: { text: string; era: string; category: string }[] = [];
+  for (const asset of farmAssets) {
+    if (seen.has(asset.name)) continue;
+    if (asset.name.toLowerCase().includes(q) || asset.keywords.some(k => k.includes(q))) {
+      seen.add(asset.name);
+      results.push({ text: asset.name, era: asset.era, category: asset.category });
+      if (results.length >= maxResults) break;
+    }
+  }
+  return results;
 }

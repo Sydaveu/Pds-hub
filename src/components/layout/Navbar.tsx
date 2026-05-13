@@ -22,6 +22,7 @@ export function Navbar() {
   const navLinks = [
     { to: '/marketplace', label: 'Marketplace' },
     { to: '/categories', label: 'Categories' },
+    { to: '/farm-assets', label: 'Farm Assets' },
     { to: '/about', label: 'About' },
   ];
 

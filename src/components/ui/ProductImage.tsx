@@ -8,12 +8,16 @@ export function ProductImage({
   className = '',
   large = false,
   imgClassName = '',
+  contain = false,
+  maxHeight = '160px',
 }: {
   src: string;
   alt: string;
   className?: string;
   large?: boolean;
   imgClassName?: string;
+  contain?: boolean;
+  maxHeight?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -31,7 +35,10 @@ export function ProductImage({
   const displaySrc = error ? getFallbackImage() : (fallbackSrc || src);
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div
+      className={`relative overflow-hidden ${className}`}
+      style={{ maxHeight }}
+    >
       {!loaded && !error && (
         <div className="absolute inset-0 bg-white/5 animate-pulse rounded-inherit">
           <div className="h-full w-full bg-gradient-to-r from-transparent via-white/5 to-transparent bg-[length:200%_100%] animate-shine" />
@@ -46,7 +53,8 @@ export function ProductImage({
         transition={{ duration: 0.3 }}
         onLoad={() => setLoaded(true)}
         onError={handleError}
-        className={`w-full h-full object-cover ${!loaded && !error ? 'invisible' : ''} ${imgClassName}`}
+        className={`w-full h-full ${contain ? 'object-contain p-2' : 'object-cover'} ${!loaded && !error ? 'invisible' : ''} ${imgClassName}`}
+        style={{ maxHeight }}
       />
     </div>
   );
