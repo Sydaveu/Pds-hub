@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       if (session?.user) {
         const profile = await fetchProfile(session.user.id);
-        setUser(mapUser(session.user, profile));
+        setUser(mapUser(session.user, profile ?? undefined));
       }
       setLoading(false);
     });
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       if (session?.user) {
         const profile = await fetchProfile(session.user.id);
-        setUser(mapUser(session.user, profile));
+        setUser(mapUser(session.user, profile ?? undefined));
       } else {
         setUser(null);
       }

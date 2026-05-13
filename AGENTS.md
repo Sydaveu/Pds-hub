@@ -9,7 +9,9 @@
 **PDS Hub** — fresh Vite + React 19 + TypeScript 6 scaffold. Pi Network related project (like the others). Exact vision/details not yet defined — awaiting David's direction.
 
 ## Current Status
-12 May 2026 — Session 2 (David rejoined). Read all files. Identified numerous issues:
+12 May 2026 — Session 2 complete. All bugs fixed, project builds, pushed to GitHub.
+- No email login (removed/not present). Pi SDK login planned for future.
+- Dev server running on http://127.0.0.1:5173/
 - Missing deps: react-router-dom, lucide-react, clsx, tailwind-merge (installed ✓)
 - Missing tailwindcss + @tailwindcss/vite (installed ✓)
 - Layout uses `<Outlet/>` but App passes children — FIXED: Layout now uses children prop
@@ -60,6 +62,22 @@ npm run build  # Production build to dist/
 - Deployment (Vercel, Netlify, etc.)
 - Adding Supabase backend
 - Pi SDK integration for Pi Network payments
+
+## Session 3 — 13 May 2026 (Current)
+- David decided to use Replit AI to add Supabase backend instead of doing it manually
+- Downloaded GitHub repo to send to Replit
+- Created `REPLIT_AI_PROMPT.md` — comprehensive prompt covering:
+  - Replit AI to create Supabase project itself (use Replit integration)
+  - Auto-fill env vars into Replit Secrets
+  - Full DB schema (6 tables: profiles, categories, products, cart_items, orders, order_items)
+  - Seed data for categories + products
+  - RLS policies for security
+  - File-by-file instructions to replace every mock with Supabase calls
+  - Auth context + Login page + protected routes
+  - Supabase Storage for avatar uploads
+  - Navbar auth-aware updates
+  - Critical rules list (do NOT break: buying-only, dark theme, AI assistant, error boundary, lazy loading, mobile-first)
+  - Deployment + verification checklist
 
 ## What David Wants From Me
 1. **Save EVERYTHING continuously** — every thought, decision, detail, writeup, as I type. Even mid-thinking. No waiting until the end.

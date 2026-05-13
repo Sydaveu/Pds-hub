@@ -141,7 +141,7 @@ export function Checkout() {
                           : 'border-white/10 hover:border-purple-500/50 hover:bg-white/2'
                       }`}
                     >
-                      {pm.recommended && (
+                      {'recommended' in pm && pm.recommended && (
                         <span className="absolute top-2 right-2 text-xs bg-amber-400/20 text-amber-400 px-2 py-0.5 rounded-full">Recommended</span>
                       )}
                       <div className="text-2xl mb-2">{pm.icon}</div>
