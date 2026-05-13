@@ -1,8 +1,6 @@
 import { type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../components/product-card/ProductCard';
-import { CATEGORY_LIST, getProductsByCategory, getProductById } from '../lib/products';
-import { getCategoryImageUrl } from '../lib/images';
 
 interface CategoryInfo {
   name: string;
@@ -12,16 +10,127 @@ interface CategoryInfo {
   productCount: number;
 }
 
-const categoriesData: Record<string, CategoryInfo> = {};
-for (const cat of CATEGORY_LIST) {
-  categoriesData[cat.id] = {
-    name: cat.name,
-    description: cat.description,
-    imageUrl: cat.imageUrl,
-    icon: cat.icon,
-    productCount: cat.productCount,
-  };
-}
+const categoriesData: Record<string, CategoryInfo> = {
+  crops: {
+    name: 'Crops',
+    description: 'Grains, cereals, and staple foods',
+    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80',
+    icon: '🌾',
+    productCount: 42
+  },
+  rice: {
+    name: 'Rice',
+    description: 'Premium rice varieties from local farms',
+    imageUrl: 'https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=800&q=80',
+    icon: '🍚',
+    productCount: 18
+  },
+  beans: {
+    name: 'Beans',
+    description: 'Protein-rich legumes and pulses',
+    imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+    icon: '🫘',
+    productCount: 25
+  },
+  yam: {
+    name: 'Yam',
+    description: 'Fresh tubers and root vegetables',
+    imageUrl: 'https://images.unsplash.com/photo-1600891964599-f43ba0e33d41?auto=format&fit=crop&w=800&q=80',
+    icon: '🍠',
+    productCount: 12
+  },
+  cassava: {
+    name: 'Cassava',
+    description: 'Starchy root vegetables and derivatives',
+    imageUrl: 'https://images.unsplash.com/photo-1600566746221-272634f0e239?auto=format&fit=crop&w=800&q=80',
+    icon: '🌱',
+    productCount: 8
+  },
+  maize: {
+    name: 'Maize',
+    description: 'Corn and maize products for food and feed',
+    imageUrl: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80',
+    icon: '🌽',
+    productCount: 15
+  },
+  vegetables: {
+    name: 'Vegetables',
+    description: 'Fresh and organic vegetables',
+    imageUrl: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80',
+    icon: '🥬',
+    productCount: 67
+  },
+  fruits: {
+    name: 'Fruits',
+    description: 'Seasonal and tropical fruits',
+    imageUrl: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?auto=format&fit=crop&w=800&q=80',
+    icon: '🍎',
+    productCount: 43
+  },
+  livestock: {
+    name: 'Livestock',
+    description: 'Cattle, goats, sheep, and other farm animals',
+    imageUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80',
+    icon: '🐄',
+    productCount: 28
+  },
+  poultry: {
+    name: 'Poultry',
+    description: 'Chicken, duck, turkey, and other birds',
+    imageUrl: 'https://images.unsplash.com/photo-1582722573459-23b5b8e03dc2?auto=format&fit=crop&w=800&q=80',
+    icon: '🐔',
+    productCount: 31
+  },
+  fishery: {
+    name: 'Fishery',
+    description: 'Fresh fish and seafood from local waters',
+    imageUrl: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=800&q=80',
+    icon: '🐟',
+    productCount: 22
+  },
+  dairy: {
+    name: 'Dairy',
+    description: 'Milk, cheese, yogurt, and dairy products',
+    imageUrl: 'https://images.unsplash.com/photo-1589110383685-8b48970aea14?auto=format&fit=crop&w=800&q=80',
+    icon: '🥛',
+    productCount: 19
+  },
+  honey: {
+    name: 'Honey',
+    description: 'Natural honey and beekeeping products',
+    imageUrl: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=800&q=80',
+    icon: '🍯',
+    productCount: 11
+  },
+  'farm-tools': {
+    name: 'Farm Tools',
+    description: 'Equipment and tools for farming',
+    imageUrl: 'https://images.unsplash.com/photo-1581091863477-7e58664e5e89?auto=format&fit=crop&w=800&q=80',
+    icon: '🔧',
+    productCount: 34
+  },
+  fertilizers: {
+    name: 'Fertilizers',
+    description: 'Nutrients and soil amendments for crops',
+    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+    icon: '🌿',
+    productCount: 27
+  },
+  seeds: {
+    name: 'Seeds',
+    description: 'Quality seeds for planting and cultivation',
+    imageUrl: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80',
+    icon: '🌱',
+    productCount: 41
+  },
+  pets: {
+    name: 'Pets',
+    description: 'Companion animals and pet care products',
+    imageUrl: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80',
+    icon: '🐕',
+    productCount: 16
+  }
+};
 
 interface CategoryProducts {
   category: string;
@@ -35,19 +144,39 @@ interface CategoryProducts {
   }>;
 }
 
-const mockProductsByCategory: Record<string, CategoryProducts[]> = {};
-for (const cat of CATEGORY_LIST) {
-  const products = getProductsByCategory(cat.id);
-  if (products.length > 0) {
-    mockProductsByCategory[cat.id] = [{
-      category: cat.name,
-      products: products.map(p => ({
-        id: p.id, name: p.name, price: p.price,
-        image: p.image, category: p.category, rating: p.rating,
-      })),
-    }];
-  }
-}
+// Mock products by category - in real app from Supabase
+const mockProductsByCategory: Record<string, CategoryProducts[]> = {
+  crops: [{
+    category: 'Crops',
+    products: [
+      { id: 'cr1', name: 'Premium Rice Bag (50kg)', price: 25, category: 'Crops', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80', rating: 4.8 },
+      { id: 'cr2', name: 'Basmathi Rice (10kg)', price: 22, category: 'Crops', image: 'https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=400&q=80', rating: 4.9 },
+      { id: 'cr3', name: 'Brown Rice (5kg)', price: 12, category: 'Crops', image: 'https://images.unsplash.com/photo-1556912051-8f9ef55cb370?auto=format&fit=crop&w=400&q=80', rating: 4.7 },
+      { id: 'cr4', name: 'Yellow Maize (Corn) (10kg)', price: 18, category: 'Crops', image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=400&q=80', rating: 4.7 },
+      { id: 'cr5', name: 'Millet (5kg)', price: 10, category: 'Crops', image: 'https://images.unsplash.com/photo-1591876323328-770d49ba3955?auto=format&fit=crop&w=400&q=80', rating: 4.6 }
+    ]
+  }],
+  rice: [{
+    category: 'Rice',
+    products: [
+      { id: 'ri1', name: 'Premium Long Grain Rice (25kg)', price: 15, category: 'Rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80', rating: 4.8 },
+      { id: 'ri2', name: 'Basmathi Rice (10kg)', price: 22, category: 'Rice', image: 'https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=400&q=80', rating: 4.9 },
+      { id: 'ri3', name: 'Jasmine Rice (5kg)', price: 18, category: 'Rice', image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=400&q=80', rating: 4.7 },
+      { id: 'ri4', name: 'Brown Rice (5kg)', price: 12, category: 'Rice', image: 'https://images.unsplash.com/photo-1556912051-8f9ef55cb370?auto=format&fit=crop&w=400&q=80', rating: 4.7 },
+      { id: 'ri5', name: 'Wild Rice Blend (2kg)', price: 20, category: 'Rice', image: 'https://images.unsplash.com/photo-1591876323328-770d49ba3955?auto=format&fit=crop&w=400&q=80', rating: 4.8 }
+    ]
+  }],
+  beans: [{
+    category: 'Beans',
+    products: [
+      { id: 'be1', name: 'Black Eyed Beans (2kg)', price: 8, category: 'Beans', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80', rating: 4.9 },
+      { id: 'be2', name: 'Red Kidney Beans (2kg)', price: 9, category: 'Beans', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80', rating: 4.8 },
+      { id: 'be3', name: 'White Navy Beans (2kg)', price: 8, category: 'Beans', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80', rating: 4.7 },
+      { id: 'be4', name: 'Chickpeas (Garbanzo) (2kg)', price: 10, category: 'Beans', image: 'https://images.unsplash.com/photo-1599486577294-0cba4265caf2?auto=format&fit=crop&w=400&q=80', rating: 4.8 },
+      { id: 'be5', name: 'Lentils (Red Split) (2kg)', price: 9, category: 'Beans', image: 'https://images.unsplash.com/photo-1600891964599-f43ba0e33d41?auto=format&fit=crop&w=400&q=80', rating: 4.7 }
+    ]
+  }]
+};
 
 export function Categories() {
   const urlParams = new URLSearchParams(window.location.search);

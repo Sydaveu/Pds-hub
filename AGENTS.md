@@ -96,18 +96,6 @@ npm run build  # Production build to dist/
   - **Tools:** was using same image as seeds (wrong!) → `photo-1597848212624-a19eb35e2651` (real garden tools)
 - **Build: ✅ 0 errors**
 
-## Session 4 — 13 May 2026 (Massive Image Expansion: 1,300 Images)
-- **Task:** Add 1,300 real product images across the entire site
-- **Created `src/lib/images.ts`** — shared image library with 29 verified Unsplash IDs across 17 categories
-- **Created `src/lib/products.ts`** — 260+ products covering African + Western foods (Rice, Beans, Maize, Yam, Cassava, Vegetables, Fruits, Livestock, Poultry, Fishery, Dairy, Honey, Seeds, Tools, Fertilizers, Pets, Oils)
-- **Updated all pages** to use shared product data:
-  - Home.tsx — 12 featured products, 8 category cards
-  - Marketplace.tsx — 260+ products with search + filter
-  - ProductDetails.tsx — gallery images from shared pool
-  - Categories.tsx — all 17 categories populated
-- Each product has 5 gallery images = 1,300+ total image slots
-- **Build: ✅ 0 errors**
-
 ## Session 5 — 13 May 2026 (Pi Network Authentication)
 - **Task:** Implement Pi Network user authentication (init, authenticate, validate)
 - **Created `src/lib/pi.ts`** — Pi SDK wrapper: `initPi()`, `authenticatePi()`, `validatePiToken()`
