@@ -129,12 +129,23 @@ npm run build  # Production build to dist/
 - **Created `.env`** with `GEMINI_API_KEY` + `VITE_GEMINI_API_KEY` (local only, gitignored)
 - **User provided Gemini API key** from Google AI Studio (free tier)
 
-### Image Accuracy Fixes
-- **NPK Fertilizer:** Was using different image in Marketplace (`1506803682981`) vs ProductDetails (`1600585154340`) — unified to `1600585154340` (fertilizer bag image)
-- **Golden Retriever Puppy:** Was using different image in Marketplace (`1559847844`) vs ProductDetails (`1552053831`) — unified to `1552053831` (golden retriever)
-- **Cassava category:** Was using same image as NPK Fertilizer (`1506803682981`) — changed to `1574323347407`
-- **Pets category:** Changed to `1552053831` for consistency with product detail page
-- **Deleted `src/App.css`** — 184 lines of dead Vite scaffold CSS, completely unused
+### Image Accuracy Fixes (MAJOR OVERHAUL)
+- **Created `src/lib/productImages.ts`** — centralized keyword→photoID mapping with 40+ entries for ALL products
+  - `getProductImage(keyword)` returns verified Unsplash CDN URL (`w=400&q=80`)
+  - `getProductImageLarge(keyword)` returns large version (`w=800&q=80`)
+  - 16 category keywords + all sub-product keywords mapped
+- **Created `src/components/ui/ProductImage.tsx`** — reusable component:
+  - Skeleton loading shimmer while image loads
+  - `onError` fallback to default agricultural image (rice)
+  - `loading="lazy"` for mobile optimization
+  - Fade-in animation via framer-motion
+- **NO hardcoded product image URLs remain** — all go through `getProductImage()`
+- **Files updated:** Marketplace.tsx, Home.tsx, Categories.tsx, ProductDetails.tsx, AiAssistantPage.tsx, Orders.tsx, ProductCard.tsx, Cart.tsx, Checkout.tsx, ProductImage.tsx
+- **NPK Fertilizer:** Unified to `1600585154340` across all files
+- **Golden Retriever Puppy:** Unified to `1552053831` across all files
+- **Cassava category:** Changed to `1574323347407` (no longer conflicts with NPK)
+- **Pets category:** Changed to `1552053831` for consistency
+- **Deleted `src/App.css`** — 184 lines of dead Vite scaffold CSS
 
 ### Categories Mock Data
 - **Added 13 missing categories** to `mockProductsByCategory` in Categories.tsx:
