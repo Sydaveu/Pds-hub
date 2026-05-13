@@ -96,15 +96,14 @@ npm run build  # Production build to dist/
   - **Tools:** was using same image as seeds (wrong!) → `photo-1597848212624-a19eb35e2651` (real garden tools)
 - **Build: ✅ 0 errors**
 
-## Session 5 — 13 May 2026 (Pi Network Authentication)
-- **Task:** Implement Pi Network user authentication (init, authenticate, validate)
+## Session 5 — 13 May 2026 (Pi Network Authentication + ChatGPT-like AI)
+- **Task:** Implement Pi Network user authentication
 - **Created `src/lib/pi.ts`** — Pi SDK wrapper: `initPi()`, `authenticatePi()`, `validatePiToken()`
 - **Updated `src/lib/auth.tsx`** — added `piUser` state, `signInWithPi()` method, auto-trigger Pi auth on app load
 - **Updated `index.html`** — added Pi SDK sandbox script
 - **Updated `src/pages/Login.tsx`** — added "Sign in with Pi" button
+- **Rewrote AI Assistant (`AiAssistantPage.tsx`)** — now responds to ANY topic conversationally, not just predefined agricultural intents. Shorter punchier responses, fun personality, action commands (navigate, show products), context-aware follow-ups. Removed rigid RESPONSES Record system — replaced with dynamic `generateResponse()` that handles anything.
 - **Build: ✅ 0 errors**
-
-## What David Wants From Me
 
 ## What David Wants From Me
 1. **Save EVERYTHING continuously** — every thought, decision, detail, writeup, as I type. Even mid-thinking. No waiting until the end.
