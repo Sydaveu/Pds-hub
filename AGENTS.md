@@ -303,3 +303,85 @@ npm run build  # Production build to dist/
 - The AI assistant refuses unrelated topics and only answers questions about PDS Agri-Hub, agriculture, Pi Network, products, marketplace usage, prices, delivery, and categories
 - Animated avatar options are placeholders for Lottie animations (to be implemented when deps available)
 - Ready for deployment once dependencies are installed
+
+## Session 8 — 13 May 2026 (Farm Asset Showcase System)
+- **Task:** Create professional agricultural asset showcase integrated into existing PDS Agri-Hub marketplace
+
+### What Was Built
+- **`src/data/farmAssets.ts`** — 45 typed farm assets with `FarmAsset` interface, search functions, era/category metadata
+  - 4 categories: food, animal, tool, utility
+  - 2 eras: native (30 assets), modern (15 assets)
+  - Helper functions: `getAssetImageUrl()`, `getAssetImageLarge()`, `searchFarmAssets()`
+- **`scripts/downloadAssets.js`** — Downloads real agricultural photos from Unsplash to `public/assets/`
+- **54 local images** (30 native + 24 modern) — 7.7MB total in `public/assets/native/` and `public/assets/modern/`
+- **`src/pages/FarmAssets.tsx`** — Full showcase page with:
+  - Era toggle tabs (All / Native 🪵 / Modern ⚙️) with gradient styling
+  - Category filter pills (All, Foods, Animals, Farm Tools, Utilities)
+  - Live search across name, description, era, category, and keywords
+  - Grid/List view toggle
+  - Glassmorphism cards with proper image bounds (`max-height: 160px`)
+  - Era badges (amber for native, cyan for modern) + category badges
+  - Image error fallback to emoji icons
+  - Empty state with clear filters action
+  - Framer Motion staggered animations
+  - Fully responsive mobile-first layout
+
+### Files Modified
+- **`src/components/ui/ProductImage.tsx`** — Added `contain` prop (uses `object-fit: contain`), `maxHeight` prop (default 160px), `p-2` padding when contained. Prevents image stretching.
+- **`src/App.tsx`** — Added lazy import for `FarmAssets` + route at `/farm-assets` with `LoadingFallback`
+- **`src/components/layout/Navbar.tsx`** — Added "Farm Assets" nav link
+- **`src/lib/searchUtils.ts`** — Added `searchFarmAssets()` (fuzzy search across name/era/category/keywords) + `getFarmAssetAutocompleteSuggestions()` for future use in SmartSearch
+
+### Image Handling Rules (FIXED)
+- Images use `object-fit: contain` with `max-height: 160px` — no stretching
+- `ProductImage.tsx` now has `contain` boolean prop — defaults to `object-cover` for backward compatibility
+- FarmAsset cards use fixed `maxHeight: 160px` with `overflow: hidden` — images never overflow
+- Error fallback: emoji icons based on category (🌾 🐾 🔧 ⚡) instead of broken images
+
+### Build
+- **Build: ✅ 0 errors** (tsc + vite build in 5.59s, 2208 modules)
+- FarmAssets chunk: 9.16 kB (gzip 2.53 kB)
+- farmAssets data chunk: 17.11 kB (gzip 4.56 kB)
+
+### Git
+- Commit `623e73e`: "Add Farm Asset Showcase with 54 local images, era tabs, category filters, and image containment fix"
+- Pushed to `origin/main` on GitHub
+
+## Session 8b — 13 May 2026 (Commit + Push)
+- Pushed commit `623e73e` to GitHub: `https://github.com/Sydaveu/Pds-hub.git`
+
+## Session 8c — 13 May 2026 (Image Fix — Unique Photos Per Card)
+- **Problem:** All farm asset cards used the SAME Unsplash photo IDs (all tools = `1597848212624`, all foods = same rice photo). Every card showed identical images.
+- **Root cause:** `farmAssets.ts` reused existing marketplace Unsplash IDs. 30/45 assets shared just 5-6 unique photo IDs.
+- **Fix:** Changed `getAssetImageUrl()` to use `picsum.photos/seed/{unique-asset-id}-{alt}/400/300` — each of the 45 assets now gets a unique seed, generating a DIFFERENT real photo per card.
+- **Also tested:** New-style Unsplash alphanumeric IDs (e.g., `NDtkoKvoC3M`) → all returned 404 on CDN, not usable.
+- **Error handling:** `AssetCard` and `AssetListItem` already have `onError` → category emoji fallback per card.
+- **Build:** ✅ 0 errors (5.65s)
+- **Commit `4859f47`:** "Fix farm asset images: use picsum with unique seeds per asset so every card shows a different image"
+- **Pushed to GitHub** ✅
+
+## Session 9 — 13 May 2026 (Pi Calculator/Converter)
+- **Task:** Add a Pi calculator/converter that shows the value of 1 Pi in various fiat currencies.
+- **Files Created:**
+  - `src/data/currencyData.ts` — Interface and sample currency data (12 currencies) with placeholder exchange rates relative to USD.
+  - `src/pages/PiCalculator.tsx` — Full calculator page with:
+    - Currency dropdown search (filter by name/code/symbol)
+    - Display of 1 Pi value in selected currency (using base rate: 1 Pi = $314,159 USD)
+    - Framer Motion animations and glassmorphism styling
+    - Mobile-responsive layout
+- **Files Modified:**
+  - `src/App.tsx` — Added lazy import for `PiCalculator` + route at `/pi-calculator`
+  - `src/components/layout/Navbar.tsx` — Added "Pi Calculator" nav link
+- **Key Features:**
+  - Converts 1 Pi to selected fiat currency using hardcoded exchange rates (illustrative only)
+  - Shows real-time formatted value with proper number formatting
+  - Searchable currency list with clear UX
+  - Error handling for invalid selections
+- **Build:** ✅ 0 errors (tsc + vite build in 5.80s, 2210 modules)
+  - PiCalculator chunk: 12.48 kB (gzip 3.87 kB)
+  - currencyData chunk: 0.46 kB (gzip 0.25 kB)
+- **Git:**
+  - Commit hash: `1afcfde`
+  - Message: "Add Pi Calculator/Converter with currency selection and conversion"
+  - Pushed to GitHub
+- **Disclaimer:** Uses placeholder exchange rate data. For production, integrate with a real-time forex API (e.g., exchangerate.host, Frankfurter, etc.).

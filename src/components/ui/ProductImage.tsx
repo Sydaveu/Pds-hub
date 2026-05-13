@@ -53,7 +53,7 @@ export function ProductImage({
         transition={{ duration: 0.3 }}
         onLoad={() => setLoaded(true)}
         onError={handleError}
-        className={`w-full h-full ${contain ? 'object-contain p-2' : 'object-cover'} ${!loaded && !error ? 'invisible' : ''} ${imgClassName}`}
+        className={`w-full h-full ${contain ? 'object-contain' : 'object-cover'} ${!loaded && !error ? 'invisible' : ''} ${imgClassName}`}
         style={{ maxHeight }}
       />
     </div>
