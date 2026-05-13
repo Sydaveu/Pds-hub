@@ -2,28 +2,26 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag, Users, Package, Clock } from 'lucide-react';
 import { ProductCard } from '../components/product-card/ProductCard';
-
-const _i = (id: string) => `https://images.unsplash.com/photo-${id}?w=400&q=80`;
-const _ib = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80`;
+import { getProductImage, getProductImageLarge } from '../lib/productImages';
 
 const featuredProducts = [
-  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: _i('1586201375761-83865001e31c'), category: 'Rice', rating: 4.8 },
-  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: _i('1557804506-669a67965ba0'), category: 'Beans', rating: 4.9 },
-  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: _i('1601493700631-2b16ec4b4716'), category: 'Fruits', rating: 4.9 },
-  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: _i('1589923188900-85dae523342b'), category: 'Livestock', rating: 4.7 },
-  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: _i('1587049352846-4a222e784d38'), category: 'Honey', rating: 4.9 },
-  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: _i('1578575437130-527eed3abbec'), category: 'Fishery', rating: 4.9 },
+  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: getProductImage('long-grain-rice'), category: 'Rice', rating: 4.8 },
+  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: getProductImage('black-eyed-beans'), category: 'Beans', rating: 4.9 },
+  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: getProductImage('mangoes'), category: 'Fruits', rating: 4.9 },
+  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: getProductImage('goat'), category: 'Livestock', rating: 4.7 },
+  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: getProductImage('honey'), category: 'Honey', rating: 4.9 },
+  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: getProductImage('tilapia'), category: 'Fishery', rating: 4.9 },
 ];
 
 const categories = [
-  { name: 'Crops', slug: 'crops', emoji: '🌾', image: _ib('1586201375761-83865001e31c'), desc: 'Grains & cereals' },
-  { name: 'Vegetables', slug: 'vegetables', emoji: '🥬', image: _ib('1540420773420-3366772f4999'), desc: 'Fresh & organic' },
-  { name: 'Fruits', slug: 'fruits', emoji: '🍎', image: _ib('1601493700631-2b16ec4b4716'), desc: 'Tropical varieties' },
-  { name: 'Livestock', slug: 'livestock', emoji: '🐄', image: _ib('1589923188900-85dae523342b'), desc: 'Cattle & goats' },
-  { name: 'Fishery', slug: 'fishery', emoji: '🐟', image: _ib('1578575437130-527eed3abbec'), desc: 'Fresh seafood' },
-  { name: 'Honey', slug: 'honey', emoji: '🍯', image: _ib('1587049352846-4a222e784d38'), desc: 'Natural honey' },
-  { name: 'Farm Tools', slug: 'farm-tools', emoji: '🔧', image: _ib('1597848212624-a19eb35e2651'), desc: 'Quality tools' },
-  { name: 'Seeds', slug: 'seeds', emoji: '🌱', image: _ib('1416879595882-3373a0480b5b'), desc: 'Quality seeds' },
+  { name: 'Crops', slug: 'crops', emoji: '🌾', image: getProductImageLarge('rice'), desc: 'Grains & cereals' },
+  { name: 'Vegetables', slug: 'vegetables', emoji: '🥬', image: getProductImageLarge('vegetables'), desc: 'Fresh & organic' },
+  { name: 'Fruits', slug: 'fruits', emoji: '🍎', image: getProductImageLarge('fruits'), desc: 'Tropical varieties' },
+  { name: 'Livestock', slug: 'livestock', emoji: '🐄', image: getProductImageLarge('livestock'), desc: 'Cattle & goats' },
+  { name: 'Fishery', slug: 'fishery', emoji: '🐟', image: getProductImageLarge('fishery'), desc: 'Fresh seafood' },
+  { name: 'Honey', slug: 'honey', emoji: '🍯', image: getProductImageLarge('honey'), desc: 'Natural honey' },
+  { name: 'Farm Tools', slug: 'farm-tools', emoji: '🔧', image: getProductImageLarge('farm-tools'), desc: 'Quality tools' },
+  { name: 'Seeds', slug: 'seeds', emoji: '🌱', image: getProductImageLarge('seeds'), desc: 'Quality seeds' },
 ];
 
 const stats = [

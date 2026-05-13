@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronRight, CreditCard, Coins, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { ProductImage } from '../components/ui/ProductImage';
 
 type PaymentMethod = 'pi' | 'visa' | 'mastercard' | 'crypto';
 type Step = 'shipping' | 'payment' | 'confirmation';
@@ -271,8 +272,7 @@ export function Checkout() {
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                 {items.map(item => (
                   <div key={item.id} className="flex gap-3">
-                    <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                      onError={e => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=100&q=80'; }} />
+                    <ProductImage src={item.image} alt={item.name} className="w-12 h-12 rounded-lg flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium line-clamp-1">{item.name}</p>
                       <p className="text-gray-500 text-xs">{item.quantity} × {item.price}π</p>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
+import { ProductImage } from '../ui/ProductImage';
 
 interface Product {
   id: string;
@@ -43,16 +44,7 @@ export function ProductCard({
       className={`group glass-card rounded-2xl border border-white/5 overflow-hidden hover:border-purple-500/30 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 ${className ?? ''}`}
     >
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          loading="lazy"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80';
-          }}
-        />
+        <ProductImage src={product.image} alt={product.name} className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         <div className="absolute top-2 left-2 bg-purple-600/90 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
           {product.category}

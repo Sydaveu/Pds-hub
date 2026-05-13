@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { ProductImage } from '../components/ui/ProductImage';
 
 export function Cart() {
   const navigate = useNavigate();
@@ -56,12 +57,7 @@ export function Cart() {
               >
                 <div className="flex gap-5">
                   <div className="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      onError={e => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80'; }}
-                    />
+                    <ProductImage src={item.image} alt={item.name} className="w-full h-full" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">

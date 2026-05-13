@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { ProductImage } from '../components/ui/ProductImage';
 
 interface OrderItem {
   id: string;
@@ -290,14 +291,7 @@ export function Orders() {
                   {order.items.map((item) => (
                     <div key={item.id} className="flex items-center space-x-4 p-3 bg-muted/50 rounded-lg">
                       <div className="w-16 h-16 flex-shrink-0">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-full h-full object-cover rounded-lg"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80';
-                          }}
-                        />
+                        <ProductImage src={item.image} alt={item.name} className="w-full h-full rounded-lg" />
                       </div>
                       <div className="flex-1">
                         <h3 className="font-medium text-foreground">{item.name}</h3>

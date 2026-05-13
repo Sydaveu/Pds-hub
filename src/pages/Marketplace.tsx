@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { ProductCard } from '../components/product-card/ProductCard';
 import { SmartSearch } from '../components/search/SmartSearch';
+import { getProductImage } from '../lib/productImages';
 
 interface Product {
   id: string;
@@ -15,63 +16,29 @@ interface Product {
   unit?: string;
 }
 
-const IMG = 'https://images.unsplash.com/photo-';
-const IMGS = {
-  r1: IMG + '1586201375761-83865001e31c?w=400&q=80',
-  r2: IMG + '1536304929831-ee1ca9d44906?w=400&q=80',
-  r3: IMG + '1595854341625-f33ee10dbf94?w=400&q=80',
-  b1: IMG + '1557804506-669a67965ba0?w=400&q=80',
-  b2: IMG + '1584308666744-24d5c474f2ae?w=400&q=80',
-  b3: IMG + '1490645935967-10de6ba17061?w=400&q=80',
-  m1: IMG + '1514326640560-7d063ef2aed5?w=400&q=80',
-  m2: IMG + '1551754655-cd27e38d2076?w=400&q=80',
-  v1: IMG + '1540420773420-3366772f4999?w=400&q=80',
-  v2: IMG + '1592924357228-91a4daadcfea?w=400&q=80',
-  v3: IMG + '1556801712-76c8eb07bbc9?w=400&q=80',
-  f1: IMG + '1601493700631-2b16ec4b4716?w=400&q=80',
-  f2: IMG + '1550258987-190a2d41a8ba?w=400&q=80',
-  l1: IMG + '1589923188900-85dae523342b?w=400&q=80',
-  l2: IMG + '1570042225831-d98fa7577f1e?w=400&q=80',
-  p1: IMG + '1548550023-2bdb3c5beed7?w=400&q=80',
-  fi1: IMG + '1578575437130-527eed3abbec?w=400&q=80',
-  fi2: IMG + '1505253758473-96b7015fcd40?w=400&q=80',
-  h1: IMG + '1587049352846-4a222e784d38?w=400&q=80',
-  d1: IMG + '1628088062854-d1870b4553da?w=400&q=80',
-  s1: IMG + '1416879595882-3373a0480b5b?w=400&q=80',
-  t1: IMG + '1597848212624-a19eb35e2651?w=400&q=80',
-  y1: IMG + '1598170845058-32b9d6a5da37?w=400&q=80',
-  g1: IMG + '1506803682981-6e718a9dd3ee?w=400&q=80',
-  g2: IMG + '1559847844-5315695dadae?w=400&q=80',
-  g3: IMG + '1574323347407-f5e1ad6d020b?w=400&q=80',
-  g4: IMG + '1542838132-92c53300491e?w=400&q=80',
-  g5: IMG + '1467003909585-2f8a72700288?w=400&q=80',
-  g6: IMG + '1540189549336-e6e99c3679fe?w=400&q=80',
-  g7: IMG + '1490818387583-1babb5f335e2?w=400&q=80',
-};
-
 const allProducts: Product[] = [
-  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: IMGS.r1, category: 'Rice', rating: 4.8, description: 'High-quality long grain rice', unit: 'bag' },
-  { id: 'c2', name: 'Basmathi Rice (10kg)', price: 22, image: IMGS.r2, category: 'Rice', rating: 4.9, description: 'Premium basmati rice with aromatic fragrance', unit: 'bag' },
-  { id: 'c3', name: 'Brown Rice (5kg)', price: 12, image: IMGS.r3, category: 'Rice', rating: 4.7, description: 'Nutritious brown rice with bran layer intact', unit: 'bag' },
-  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: IMGS.b1, category: 'Beans', rating: 4.9, description: 'Protein-rich black eyed beans', unit: 'kg' },
-  { id: 'c5', name: 'Yellow Maize (Corn) (10kg)', price: 18, image: IMGS.m1, category: 'Maize', rating: 4.7, description: 'Sweet yellow maize, ideal for roasting or grinding', unit: 'kg' },
-  { id: 'c6', name: 'Fresh Tomatoes (5kg box)', price: 12, image: IMGS.v2, category: 'Vegetables', rating: 4.8, description: 'Ripe juicy tomatoes', unit: 'box' },
-  { id: 'c7', name: 'Organic Carrots (3kg)', price: 10, image: IMGS.v1, category: 'Vegetables', rating: 4.9, description: 'Sweet crunchy organic carrots', unit: 'kg' },
-  { id: 'c8', name: 'Red Bell Peppers (2kg)', price: 15, image: IMGS.v3, category: 'Vegetables', rating: 4.8, description: 'Vibrant red bell peppers', unit: 'kg' },
-  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: IMGS.f1, category: 'Fruits', rating: 4.9, description: 'Juicy ripe mangoes', unit: 'pack' },
-  { id: 'c10', name: 'Fresh Pineapples (5pcs)', price: 18, image: IMGS.f2, category: 'Fruits', rating: 4.8, description: 'Golden pineapples rich in vitamin C', unit: 'pack' },
-  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: IMGS.l1, category: 'Livestock', rating: 4.7, description: 'Healthy live goat', unit: 'head' },
-  { id: 'c12', name: 'Broiler Chicken (2kg)', price: 25, image: IMGS.p1, category: 'Poultry', rating: 4.8, description: 'Tender broiler chicken', unit: 'bird' },
-  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: IMGS.fi1, category: 'Fishery', rating: 4.9, description: 'Freshwater tilapia', unit: 'kg' },
-  { id: 'c14', name: 'Fresh Cow Milk (10L)', price: 20, image: IMGS.d1, category: 'Dairy', rating: 4.8, description: 'Pure cow milk', unit: 'litre' },
-  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: IMGS.h1, category: 'Honey', rating: 4.9, description: 'Pure natural honey', unit: 'jar' },
-  { id: 'c16', name: 'Hoe Tool Set (3pcs)', price: 45, image: IMGS.t1, category: 'Farm Tools', rating: 4.7, description: 'Durable hoe set', unit: 'set' },
-  { id: 'c17', name: 'NPK Fertilizer (25kg bag)', price: 60, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80', category: 'Fertilizers', rating: 4.8, description: 'Balanced NPK fertilizer', unit: 'bag' },
-  { id: 'c18', name: 'Maize Seeds (2kg)', price: 12, image: IMGS.s1, category: 'Seeds', rating: 4.7, description: 'High-yield maize seeds', unit: 'pack' },
-  { id: 'c19', name: 'Golden Retriever Puppy', price: 200, image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&q=80', category: 'Pets', rating: 4.9, description: 'Friendly golden retriever puppy', unit: 'puppy' },
-  { id: 'c20', name: 'Fresh Yam (5kg)', price: 10, image: IMGS.y1, category: 'Yam', rating: 4.7, description: 'Fresh tubers from local farms', unit: 'kg' },
-  { id: 'c21', name: 'Cassava Flour (5kg)', price: 9, image: IMGS.g5, category: 'Cassava', rating: 4.6, description: 'Fine cassava flour for cooking', unit: 'bag' },
-  { id: 'c22', name: 'Large Cow (Mature)', price: 300, image: IMGS.l2, category: 'Livestock', rating: 4.8, description: 'Healthy mature cow', unit: 'head' },
+  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: getProductImage('long-grain-rice'), category: 'Rice', rating: 4.8, description: 'High-quality long grain rice', unit: 'bag' },
+  { id: 'c2', name: 'Basmathi Rice (10kg)', price: 22, image: getProductImage('basmati-rice'), category: 'Rice', rating: 4.9, description: 'Premium basmati rice with aromatic fragrance', unit: 'bag' },
+  { id: 'c3', name: 'Brown Rice (5kg)', price: 12, image: getProductImage('brown-rice'), category: 'Rice', rating: 4.7, description: 'Nutritious brown rice with bran layer intact', unit: 'bag' },
+  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: getProductImage('black-eyed-beans'), category: 'Beans', rating: 4.9, description: 'Protein-rich black eyed beans', unit: 'kg' },
+  { id: 'c5', name: 'Yellow Maize (Corn) (10kg)', price: 18, image: getProductImage('maize'), category: 'Maize', rating: 4.7, description: 'Sweet yellow maize, ideal for roasting or grinding', unit: 'kg' },
+  { id: 'c6', name: 'Fresh Tomatoes (5kg box)', price: 12, image: getProductImage('tomatoes'), category: 'Vegetables', rating: 4.8, description: 'Ripe juicy tomatoes', unit: 'box' },
+  { id: 'c7', name: 'Organic Carrots (3kg)', price: 10, image: getProductImage('carrots'), category: 'Vegetables', rating: 4.9, description: 'Sweet crunchy organic carrots', unit: 'kg' },
+  { id: 'c8', name: 'Red Bell Peppers (2kg)', price: 15, image: getProductImage('bell-peppers'), category: 'Vegetables', rating: 4.8, description: 'Vibrant red bell peppers', unit: 'kg' },
+  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: getProductImage('mangoes'), category: 'Fruits', rating: 4.9, description: 'Juicy ripe mangoes', unit: 'pack' },
+  { id: 'c10', name: 'Fresh Pineapples (5pcs)', price: 18, image: getProductImage('pineapples'), category: 'Fruits', rating: 4.8, description: 'Golden pineapples rich in vitamin C', unit: 'pack' },
+  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: getProductImage('goat'), category: 'Livestock', rating: 4.7, description: 'Healthy live goat', unit: 'head' },
+  { id: 'c12', name: 'Broiler Chicken (2kg)', price: 25, image: getProductImage('broiler'), category: 'Poultry', rating: 4.8, description: 'Tender broiler chicken', unit: 'bird' },
+  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: getProductImage('tilapia'), category: 'Fishery', rating: 4.9, description: 'Freshwater tilapia', unit: 'kg' },
+  { id: 'c14', name: 'Fresh Cow Milk (10L)', price: 20, image: getProductImage('milk'), category: 'Dairy', rating: 4.8, description: 'Pure cow milk', unit: 'litre' },
+  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: getProductImage('honey'), category: 'Honey', rating: 4.9, description: 'Pure natural honey', unit: 'jar' },
+  { id: 'c16', name: 'Hoe Tool Set (3pcs)', price: 45, image: getProductImage('farm-tools'), category: 'Farm Tools', rating: 4.7, description: 'Durable hoe set', unit: 'set' },
+  { id: 'c17', name: 'NPK Fertilizer (25kg bag)', price: 60, image: getProductImage('npk-fertilizer'), category: 'Fertilizers', rating: 4.8, description: 'Balanced NPK fertilizer', unit: 'bag' },
+  { id: 'c18', name: 'Maize Seeds (2kg)', price: 12, image: getProductImage('maize-seeds'), category: 'Seeds', rating: 4.7, description: 'High-yield maize seeds', unit: 'pack' },
+  { id: 'c19', name: 'Golden Retriever Puppy', price: 200, image: getProductImage('golden-retriever'), category: 'Pets', rating: 4.9, description: 'Friendly golden retriever puppy', unit: 'puppy' },
+  { id: 'c20', name: 'Fresh Yam (5kg)', price: 10, image: getProductImage('yam'), category: 'Yam', rating: 4.7, description: 'Fresh tubers from local farms', unit: 'kg' },
+  { id: 'c21', name: 'Cassava Flour (5kg)', price: 9, image: getProductImage('cassava-flour'), category: 'Cassava', rating: 4.6, description: 'Fine cassava flour for cooking', unit: 'bag' },
+  { id: 'c22', name: 'Large Cow (Mature)', price: 300, image: getProductImage('cow'), category: 'Livestock', rating: 4.8, description: 'Healthy mature cow', unit: 'head' },
 ];
 
 const CATEGORIES = ['All', 'Rice', 'Beans', 'Maize', 'Yam', 'Cassava', 'Vegetables', 'Fruits', 'Livestock', 'Poultry', 'Fishery', 'Dairy', 'Honey', 'Farm Tools', 'Fertilizers', 'Seeds', 'Pets'];
