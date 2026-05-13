@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Bot, ArrowLeft, RefreshCw, Sparkles, ExternalLink, Trash2 } from 'lucide-react';
+import { Send, Bot, ArrowLeft, RefreshCw, Sparkles, ExternalLink, Trash2, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { generateGeminiResponse, isGeminiConfigured } from '../lib/gemini';
 
 interface ChatMessage {
   id: string;
@@ -157,67 +158,106 @@ function detectIntent(msg: string, ctx: ChatContext): { intent: string; category
 
 function pick<T>(a: T[]): T { return a[Math.floor(Math.random() * a.length)]; }
 
-function generateResponse(intent: string, category: string | null, ctx: ChatContext): { text: string; images?: { url: string; caption: string }[]; smartReplies?: string[]; link?: { label: string; to: string } } {
-  const name = ctx.userName || 'there';
+let _globalUsedIndices = new Set<number>();
 
-  const genericReplies = () => shuffleArr(['Show me products \uD83D\uDED2', 'How does Pi work? \uD83E\uDD67', 'Tell me a joke \uD83D\uDE04', 'Go to marketplace', 'What categories?', 'Show me honey \uD83C\uDF6F']).slice(0, 4);
+const freshReplies = [
+  'What can you help with?', 'Tell me about PDS Agri-Hub',
+  'How do I checkout?', 'Show me rice \uD83C\uDF3E',
+  'Any fish today? \uD83D\uDC1F', 'Show me dairy products \uD83E\uDD5B',
+  'Take me to categories', 'What fruits do you have? \uD83C\uDF4E',
+  'I want to buy tools \uD83D\uDD27', 'Show me poultry \uD83D\uDC14',
+  'Tell me about Pi Network', 'How does delivery work? \uD83D\uDE9A',
+  'What\u2019s your name?', 'Show me your best deals',
+  'How do I track my order?', 'Do you have seeds? \uD83C\uDF31',
+  'I want fresh yam \uD83C\uDF60', 'Show me cassava \uD83C\uDF3E',
+  'Tell me a fun fact', 'What\u2019s trending today?',
+];
+
+function generateResponse(intent: string, category: string | null, ctx: ChatContext, usedIndices?: Set<number>): { text: string; images?: { url: string; caption: string }[]; smartReplies?: string[]; link?: { label: string; to: string } } {
+  const name = ctx.userName || 'there';
+  const msgCount = ctx.followUpDepth;
+
+  const genericReplies = () => shuffleArr([
+    'Show me products \uD83D\uDED2', 'How does Pi work? \uD83E\uDD67',
+    'Tell me a joke \uD83D\uDE04', 'Go to marketplace',
+    'What categories?', 'Show me honey \uD83C\uDF6F',
+    'I need livestock \uD83D\uDC04', 'Show me fresh veggies \uD83E\uDD6C',
+  ]).slice(0, 4);
 
   switch (intent) {
-    case 'greeting': return {
-      text: pick([
-        `Hey ${name}! \uD83D\uDC4B I'm SY-DAVET \u2014 your AI marketplace wingman. What are we getting into today?`,
+    case 'greeting': {
+      const opts = [
+        `Hey ${name}! \uD83D\uDC4B I'm SY-DAVET — your AI marketplace wingman. What are we getting into today?`,
         `Yo ${name}! \uD83D\uDD25 Back again? Love it. What can I hook you up with?`,
         `\uD83D\uDC4A Sup ${name}! Ready to shop or just wanna chat? I'm here for both.`,
         `Ayy ${name}! \uD83D\uDE0E SY-DAVET in the house. Need farm fresh goods? Pi payments? A quick laugh? Say the word.`,
         `Good to see you ${name}! \uD83D\uDC4B I've got the whole marketplace at my fingertips. What you looking for?`,
-      ]),
-      smartReplies: pick([
+        `Welcome back ${name}! \uD83C\uDF1F Market's fresh, Pi's ready, and I'm locked in. What's the move today?`,
+      ];
+      const used = usedIndices ? [...usedIndices] : [];
+      const available = opts.filter((_, i) => !used.includes(i));
+      const chosen = available.length > 0 ? pick(available) : pick(opts);
+      if (usedIndices) usedIndices.add(opts.indexOf(chosen));
+      const smartOpts = [
         ['Show me vegetables \uD83E\uDD6C', 'What livestock? \uD83D\uDC04', 'How do I pay with Pi?', 'Tell me a joke \uD83D\uDE04'],
         ['Show me products', 'What can you do?', 'Go to marketplace', 'Tell me about PDS'],
-      ]),
-    };
+        ['Show me rice \uD83C\uDF3E', 'Any goat available? \uD83D\uDC10', 'How does checkout work?', 'Show me fresh fish \uD83D\uDC1F'],
+      ];
+      return { text: chosen, smartReplies: pick(smartOpts) };
+    }
 
-    case 'thanks': return {
-      text: pick([
+    case 'thanks': {
+      const opts = [
         `Anytime ${name}! \uD83D\uDC4C That's what I'm here for. What else?`,
         `No problem ${name}! \uD83D\uDC4D Happy to help. Need anything else?`,
         `You got it ${name}! \uD83D\uDE0E Don't hesitate to ask for more.`,
         `My pleasure ${name}! \uD83D\uDC96 Just say the word if you need anything else.`,
-      ]),
-      smartReplies: pick([genericReplies(), ['Show me products', 'Help with payment', 'Tell me more', 'Nah I\'m good']]),
-    };
+        `All part of the service \uD83D\uDC4A You need something else, you know where I am!`,
+      ];
+      return { text: pick(opts), smartReplies: pick([genericReplies(), shuffleArr(freshReplies).slice(0, 4)]) };
+    }
 
     case 'bye': return {
       text: pick([
         `Catch you later ${name}! \uD83D\uDC4B Come back when you need fresh goods. I'll be here.`,
         `Later ${name}! \uD83D\uDC4B Stay fresh \uD83D\uDE0E`,
         `See you ${name}! Hit me up anytime you need the best farm deals \uD83D\uDC4A`,
-        `Peace out ${name}! \uD83C\uDF1F Don't forget \u2014 PDS Agri-Hub has everything you need.`,
+        `Peace out ${name}! \uD83C\uDF1F Don't forget — PDS Agri-Hub has everything you need.`,
+        `I'll be here when you need me \uD83D\uDE0E Stay blessed ${name}! \uD83C\uDF3E`,
       ]),
     };
 
     case 'creator': return {
       text: pick([
-        `I'm **SY-DAVET** \u2014 built by **JJ Void Assistant** for PDS Agri-Hub. I know the marketplace inside out: products, prices, Pi payments, delivery. Think of me as your super informed friend who works at the market 24/7 \uD83D\uDE0E`,
-        `**SY-DAVET** here! JJ Void Assistant created me specifically for this marketplace. I can show you products, explain Pi payments, guide you through checkout \u2014 basically be your personal shopping assistant on steroids \uD83D\uDE80`,
+        `I'm **SY-DAVET** — built by **JJ Void Assistant** for PDS Agri-Hub. I know the marketplace inside out: products, prices, Pi payments, delivery. Think of me as your super informed friend who works at the market 24/7 \uD83D\uDE0E`,
+        `**SY-DAVET** here! JJ Void Assistant created me specifically for this marketplace. I can show you products, explain Pi payments, guide you through checkout — basically be your personal shopping assistant on steroids \uD83D\uDE80`,
+        `JJ Void Assistant built me to be the most helpful AI in agriculture. I know every product, price tag, and Pi trick. What do you need? \uD83D\uDE0E`,
       ]),
-      smartReplies: ['What can you do?', 'Show me products', 'How does Pi payment work?', 'Tell me about PDS'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
-    case 'joke': return {
-      text: pick([
-        `Why did the rice go to therapy? \uD83E\uDD14\n...It had too many **strain** issues! \uD83C\uDF3E\nAlright, that was terrible. What else you got?`,
+    case 'joke': {
+      const allJokes = [
+        `Why did the rice go to therapy? \uD83E\uDD14\n...It had too many **strain** issues! \uD83C\uDF3E`,
         `Why don't farmers tell secrets? \uD83E\uDD14\n...The **corn has ears**, the **beans stalk**, and the **potatoes have eyes**! \uD83C\uDF3D`,
         `What did the goat say to the farmer? \uD83D\uDC10\n...Stop **kid**ding around and feed me! \uD83D\uDE02`,
         `How do you catch a farm animal? \uD83E\uDD14\n...**Hoe** down! \uD83D\uDE02 OK that one was a stretch.`,
         `What's a farmer's favorite type of music? \uD83C\uDFB5\n...**Country**! (Specifically crop country) \uD83C\uDF3E`,
         `Why did the tomato turn red? \uD83C\uDF45\n...Because it saw the **salad dressing**! \uD83D\uDE02`,
-      ]),
-      smartReplies: pick([
-        ["Another joke \uD83D\uDE04", "Show me products", "That's terrible lol \uD83D\uDE02", "What else can you do?"],
-        ["OK you're funny \uD83D\uDE06", "Show me vegetables", "Tell me about Pi", "More jokes!"],
-      ]),
-    };
+        `What do you call a cow during an earthquake? \uD83D\uDC04\n...A **milkshake**! \uD83D\uDE02`,
+        `Why did the chicken join the band? \uD83D\uDC14\n...Because it had the **drumsticks**! \uD83C\uDFB5`,
+        `What did the fish say when it hit the wall? \uD83D\uDC1F\n...**Dam**! \uD83D\uDE02`,
+        `Why did the bee get married? \uD83D\uDC1D\n...Because it found its **honey**! \uD83C\uDF6F`,
+      ];
+      return {
+        text: pick(allJokes),
+        smartReplies: pick([
+          ["Another joke \uD83D\uDE04", "Show me products", "That's terrible lol \uD83D\uDE02", "What else can you do?"],
+          ["OK you're funny \uD83D\uDE06", "Show me vegetables", "Tell me about Pi", "More jokes!"],
+          ["One more joke \uD83E\uDD23", "Take me to marketplace", "You're hilarious \uD83D\uDE02", "Show me rice"],
+        ]),
+      };
+    }
 
     case 'howareyou': return {
       text: pick([
@@ -225,16 +265,17 @@ function generateResponse(intent: string, category: string | null, ctx: ChatCont
         `I'm great ${name}! Just chilling in the cloud, ready to help. You need anything?`,
         `Honestly? I'm thriving \uD83D\uDE0E Got a whole marketplace to explore with you. What's on your mind?`,
         `Better now that you're here! \uD83D\uDE09 What can I do for you today?`,
+        `Living the dream ${name}! \uD83D\uDE0E Pi-powered and ready to assist. What's cooking?`,
       ]),
-      smartReplies: genericReplies(),
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'about_me': return {
       text: pick([
-        `I'm **SY-DAVET** \u2014 your AI shopping buddy built by JJ Void Assistant. I live in PDS Agri-Hub, a Pi-powered marketplace. I can show products, share prices, guide checkout, tell jokes, or just keep you company. Basically a friend who knows the market 24/7 \uD83D\uDE0E`,
+        `I'm **SY-DAVET** — your AI shopping buddy built by JJ Void Assistant. I live in PDS Agri-Hub, a Pi-powered marketplace. I can show products, share prices, guide checkout, tell jokes, or just keep you company. Basically a friend who knows the market 24/7 \uD83D\uDE0E`,
         `**SY-DAVET** at your service! Created by JJ Void Assistant for PDS Agri-Hub. I know every product, price, and Pi payment trick. Plus I'm fun to chat with \uD83D\uDE0E What do you need?`,
       ]),
-      smartReplies: ['Show me products', 'What can you do?', 'How does Pi work?', 'Tell me about PDS'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'appreciation': return {
@@ -242,45 +283,50 @@ function generateResponse(intent: string, category: string | null, ctx: ChatCont
         `\uD83D\uDE0A You're too kind ${name}! Honestly made my day. What else can I help with?`,
         `Thanks ${name}! \uD83D\uDC4C I try my best. Anything else you need?`,
         `Appreciate that ${name}! \uD83D\uDC96 Let me know what you want to explore next.`,
+        `You're the best ${name}! \uD83D\uDE0E Got more questions? I'm all ears.`,
       ]),
-      smartReplies: genericReplies(),
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'help': return {
       text: pick([
-        `Quick rundown \uD83D\uDCA1\n\u2022 **Show products** \u2014 say \"show me rice\"\n\u2022 **Prices** \u2014 \"how much is goat?\"\n\u2022 **Pi payments** \u2014 \"how does Pi work?\"\n\u2022 **Navigate** \u2014 \"go to marketplace\"\n\u2022 **Chat** \u2014 just talk to me \uD83D\uDE0E`,
-        `Here's what I can do \uD83D\uDD79\uFE0F\n\u2022 Find products & show pics\n\u2022 Explain Pi & payments\n\u2022 Guide checkout\n\u2022 Tell jokes\nJust type naturally \u2014 I understand plain English!`,
+        `Quick rundown \uD83D\uDCA1\n\u2022 **Show products** — say "show me rice"\n\u2022 **Prices** — "how much is goat?"\n\u2022 **Pi payments** — "how does Pi work?"\n\u2022 **Navigate** — "go to marketplace"\n\u2022 **Chat** — just talk to me \uD83D\uDE0E`,
+        `Here's what I can do \uD83D\uDD79\uFE0F\n\u2022 Find products & show pics\n\u2022 Explain Pi & payments\n\u2022 Guide checkout\n\u2022 Tell jokes\nJust type naturally — I understand plain English!`,
+        `I can help with \uD83D\uDC4C\n\u2022 Browsing 16 categories\n\u2022 Checking prices in Pi (\u03c0)\n\u2022 Navigating the marketplace\n\u2022 Explaining checkout\nJust ask me anything!`,
       ]),
-      smartReplies: ['Show me vegetables', 'How does Pi payment work?', 'Go to marketplace', 'Tell me a joke'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'payment': return {
       text: pick([
         `Pi payments \uD83E\uDD67\n1. Add items to cart\n2. Checkout \u2192 select **Pi Network**\n3. Confirm in your Pi wallet\n4. Done \u2705\nAll prices in Pi (\u03c0). No hidden fees. Simple.`,
         `Super simple \uD83D\uDC4C You checkout, pick Pi Network as payment, confirm in your wallet \u2192 done. All prices shown in Pi (\u03c0). Couldn't be easier.`,
+        `Paying with Pi is the easiest part \uD83D\uDE0E Just pick "Pi Network" at checkout, approve in your wallet, and you're done in seconds. No bank needed!`,
       ]),
-      smartReplies: ['What about Visa?', 'Take me to marketplace', 'Is it safe?', 'Show me what to buy'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'delivery': return {
       text: pick([
         `**Free delivery** \uD83D\uDE9A on every order! 2-5 business days nationwide. Cold-chain for fresh items, humane transport for animals. Track under My Orders.`,
         `All deliveries are **free** \uD83C\uDF89 2-5 days. Perishables get cold packaging, animals get special transport. Track your order anytime!`,
+        `We deliver everywhere for **free** \uD83C\uDF89 Expect 2-5 business days. Fresh items stay chilled, animals travel safely. You can track everything!`,
       ]),
-      smartReplies: ['How does checkout work?', 'Show me products', 'Track my order', 'Is delivery really free?'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'checkout': return {
       text: pick([
         `3 steps \u23F1\uFE0F\n1. Shipping details\n2. Pick payment (Pi, card, crypto)\n3. Confirm \u2192 done!\nFree delivery, 7.5% tax. Takes 2 minutes.`,
         `Quick & easy! Fill shipping \u2192 choose payment \u2192 confirm. Free delivery, transparent pricing. About 2 minutes start to finish.`,
+        `Checkout is smooth \uD83D\uDE0E Enter your shipping \u2192 pick Pi or card \u2192 confirm. Free delivery, 7.5% tax. Done in 2 mins!`,
       ]),
-      smartReplies: ['How does Pi payment work?', 'Go to cart', 'Show me products', 'Is delivery free?'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'price': return {
       text: `All in **Pi (\u03c0)**. Crops: 10-30\u03c0, Animals: 50-300\u03c0, Tools: 5-50\u03c0. Want me to show you specific prices?`,
-      smartReplies: ['Show me rice', 'Show me livestock', 'What vegetables are cheap?', 'How do I pay?'],
+      smartReplies: shuffleArr(freshReplies).slice(0, 4),
     };
 
     case 'navigate': return {
@@ -298,46 +344,48 @@ function generateResponse(intent: string, category: string | null, ctx: ChatCont
             `Fresh **${cname}** just for you! \uD83D\uDE0E`,
           ]),
           images: PRODUCT_IMAGES[category],
-          smartReplies: [`How much is ${category}?`, `Show me more products`, `What about prices?`, `Add to cart`],
+          smartReplies: shuffleArr(freshReplies).slice(0, 4),
         };
       }
       return {
         text: pick([
-          `We've got tons of fresh products! Just tell me what you're looking for \u2014 **rice**, **goat**, **honey**, **tools**... I got you \uD83D\uDC4C`,
+          `We've got tons of fresh products! Just tell me what you're looking for — **rice**, **goat**, **honey**, **tools**... I got you \uD83D\uDC4C`,
           `So many options! Try asking for something specific like **rice**, **beans**, or **vegetables** \uD83D\uDE0E`,
         ]),
-        smartReplies: ['Show me rice \uD83C\uDF3E', 'Show me livestock \uD83D\uDC04', 'Show me honey \uD83C\uDF6F', 'What categories do you have?'],
+        smartReplies: shuffleArr(freshReplies).slice(0, 4),
       };
     }
 
     default: {
       const chatty = [
-        `I hear you ${name}! \uD83D\uDC42 I'm built for this marketplace but I love a good chat. Want to check out some products or just vibe?`,
-        `Got it \uD83D\uDC4A I'm SY-DAVET, your AI marketplace friend. I know a ton about our products, Pi payments, and more. What's up?`,
-        `Interesting! \uD83E\uDD14 I might be a marketplace AI but I'm always down for a real conversation. What's on your mind?`,
-        `I respect that ${name}! \uD83D\uDC4A Whether you want to shop, learn about Pi, or just talk \u2014 I'm here for it.`,
-        `\uD83D\uDE0E You're chatting with SY-DAVET \u2014 the AI that knows PDS Agri-Hub inside out. Products? Prices? Pi? Jokes? I do it all.`,
+        msgCount > 5 ? `\uD83D\uDE0E We're having a proper conversation now ${name}! What's next on your mind?` : `I hear you ${name}! \uD83D\uDC42 I'm built for this marketplace but I love a good chat. Want to check out some products or just vibe?`,
+        msgCount > 5 ? `Alright ${name}, you're basically family now \uD83D\uDC4A What's on your mind?` : `Got it \uD83D\uDC4A I'm SY-DAVET, your AI marketplace friend. I know a ton about our products, Pi payments, and more. What's up?`,
+        msgCount > 3 ? `${name}! \uD83D\uDC4A You've been around — you know the drill by now. Products, payments, chat... what are we doing?` : `Interesting! \uD83E\uDD14 I might be a marketplace AI but I'm always down for a real conversation. What's on your mind?`,
+        msgCount > 5 ? `I love the energy ${name}! \uD83D\uDD25 We've been at this for a minute. What else you got?` : `I respect that ${name}! \uD83D\uDC4A Whether you want to shop, learn about Pi, or just talk — I'm here for it.`,
+        `\uD83D\uDE0E You're chatting with SY-DAVET — the AI that knows PDS Agri-Hub inside out. Products? Prices? Pi? Jokes? I do it all.`,
         `Haha say less! \uD83D\uDC4A I'm listening. Want to see what's fresh on the marketplace or just hang out?`,
-        `Fair enough ${name}! \uD83D\uDC4C I'm an open book \u2014 ask me anything about the marketplace or just talk. I'll match your energy.`,
-        `I feel you \uD83D\uDE4C I may be an AI but I've got personality. Products, Pi payments, or random topics \u2014 hit me!`,
-        `Lol I love it ${name}! \uD83D\uDE06 Whatever you're into \u2014 shopping, learning about Pi, or shooting the breeze \u2014 I'm your guy.`,
-        `I got you ${name}! \uD83D\uDC4A I specialize in PDS Agri-Hub \u2014 fresh produce, livestock, Pi payments, you name it. But I can talk about anything. Let's go!`,
+        `That's what I'm here for ${name}! \uD83D\uDC4C Products, Pi, or just a chat — your call.`,
+        `I feel you \uD83D\uDE4C I may be an AI but I've got personality. Products, Pi payments, or random topics — hit me!`,
+        `Lol I love it ${name}! \uD83D\uDE06 Whatever you're into — shopping, learning about Pi, or shooting the breeze — I'm your guy.`,
+        `I got you ${name}! \uD83D\uDC4A I specialize in PDS Agri-Hub — fresh produce, livestock, Pi payments, you name it. But I can talk about anything.`,
         `Bet! \uD83D\uDC4A I'm SY-DAVET, your AI marketplace sidekick. Need product pics, prices, or just someone to talk to? I'm always online.`,
-        `Say no more \uD83D\uDC4C I know this marketplace back to front. Ask me about any product, payment, or just vibe with me. Your call!`,
-        `\uD83E\uDD1D I'm here for it ${name}. Shopping, learning, chatting \u2014 I do it all and I do it with style. What are we doing today?`,
-        `Alright I see you ${name}! \uD83D\uDE0E I'm SY-DAVET \u2014 part shopping expert, part conversation buddy. What's the move?`,
-        `You're chatting with the coolest AI in agriculture \uD83D\uDE0E SY-DAVET, at your service. Want to explore the marketplace or just talk?`,
-        `I'm locked in \uD83D\uDD25 Whatever you need \u2014 product recs, Pi payment help, or just a good conversation \u2014 I'm ready. What's good ${name}?`,
+        `Say no more \uD83D\uDC4C I know this marketplace back to front. Ask me about any product, payment, or just vibe with me.`,
+        `\uD83E\uDD1D I'm here for it ${name}. Shopping, learning, chatting — I do it all and I do it with style.`,
+        `Alright I see you ${name}! \uD83D\uDE0E I'm SY-DAVET — part shopping expert, part conversation buddy. What's the move?`,
+        `You're chatting with the coolest AI in agriculture \uD83D\uDE0E SY-DAVET, at your service.`,
+        `I'm locked in \uD83D\uDD25 Whatever you need — product recs, Pi payment help, or just a good conversation — I'm ready.`,
+        `Tell me more ${name}! \uD83D\uDC42 I'm genuinely curious. Shopping, questions, random topics — I can roll with it all \uD83D\uDE0E`,
+        `\uD83D\uDD25 I love where this is going. SY-DAVET is fully engaged and ready for whatever comes next!`,
+        `${name}! \uD83C\uDF1F You know what's funny? I never get tired of talking marketplace. Every product, every category, every Pi coin... let's go!`,
+        `OK you've got my attention \uD83D\uDC42 SY-DAVET reporting for duty. What's the mission today?`,
+        `I'm all ears ${name} \uD83D\uDC42 Actually I'm all code but you get the point. What's happening?`,
+        `\uD83C\uDF1F This is the energy I love. ${name} in the building and we're about to make moves. What's good?`,
+        `Ayy there we go \uD83D\uDE0E SY-DAVET online and ready. You know the vibes — fresh products, Pi payments, good conversation.`,
+        `I'm vibing ${name}! \uD83D\uDE0C Whether it's products, Pi talk, or just shooting the breeze — I'm here for it all.`,
+        `Respect \uD83D\uDC4A You're talking to the AI that knows 16 categories, 22+ products, and all things Pi. Ask me anything!`,
+        `This is my favorite kind of conversation \uD83D\uDE0E Just ${name} and SY-DAVET shooting the breeze. What's on your mind?`,
       ];
-      const allReplies = [
-        'Show me what you\'ve got \uD83D\uDC4C', 'How does Pi payment work? \uD83E\uDD67',
-        'Tell me a joke \uD83D\uDE04', 'Take me to marketplace',
-        'What categories do you have?', 'Show me honey \uD83C\uDF6F',
-        'Tell me about yourself', 'What can you help with?',
-        'I need farm tools', 'Show me fresh vegetables',
-        'How does delivery work?', 'What\'s your favorite product?',
-      ];
-      return { text: pick(chatty), smartReplies: shuffleArr(allReplies).slice(0, 4) };
+      return { text: pick(chatty), smartReplies: shuffleArr(freshReplies).slice(0, 4) };
     }
   }
 }
@@ -411,10 +459,24 @@ export function AiAssistantPage() {
       return;
     }
 
-    await new Promise(r => setTimeout(r, 500 + Math.random() * 600));
-    addBotResponse(generateResponse(intent, category, contextRef.current), intent, category);
+    // Try Gemini first if configured
+    let geminiText: string | null = null;
+    if (isGeminiConfigured) {
+      const history = messages
+        .filter(m => m.id !== 'welcome' && !m.id.startsWith('reset-') && !m.id.startsWith('welcome-'))
+        .slice(-10)
+        .map(m => ({ role: m.isUser ? 'user' as const : 'model' as const, text: m.text }));
+      geminiText = await generateGeminiResponse(history, msg);
+    }
+
+    if (geminiText) {
+      addBotResponse({ text: geminiText, smartReplies: shuffleArr(freshReplies).slice(0, 4) }, intent, category);
+    } else {
+      await new Promise(r => setTimeout(r, 500 + Math.random() * 600));
+      addBotResponse(generateResponse(intent, category, contextRef.current), intent, category);
+    }
     setIsTyping(false);
-  }, [input, isTyping, addBotResponse, navigate]);
+  }, [input, isTyping, addBotResponse, navigate, messages]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
@@ -457,7 +519,14 @@ export function AiAssistantPage() {
           <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-[#09090b] animate-pulse" />
         </div>
         <div className="flex-1">
-          <p className="text-white font-semibold text-sm">SY-DAVET Assistant</p>
+          <p className="text-white font-semibold text-sm flex items-center gap-2">
+            SY-DAVET Assistant
+            {isGeminiConfigured && (
+              <span className="text-[10px] bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                <Zap className="h-2.5 w-2.5" /> AI
+              </span>
+            )}
+          </p>
           <p className="text-gray-500 text-xs">by JJ Void {messages.length > 0 ? `\u2022 ${messages.length} msgs` : '\u2022 Online'}</p>
         </div>
         <button onClick={handleClear} className="p-2 rounded-xl hover:bg-white/5 text-gray-500 hover:text-white transition-colors" title="New conversation"><RefreshCw className="h-4 w-4" /></button>

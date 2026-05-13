@@ -105,6 +105,51 @@ npm run build  # Production build to dist/
 - **Rewrote AI Assistant (`AiAssistantPage.tsx`)** — now responds to ANY topic conversationally, not just predefined agricultural intents. Shorter punchier responses, fun personality, action commands (navigate, show products), context-aware follow-ups. Removed rigid RESPONSES Record system — replaced with dynamic `generateResponse()` that handles anything.
 - **Build: ✅ 0 errors**
 
+## Session 6 — 13 May 2026 (Gemini AI Integration + Image Accuracy + Categories Fix)
+### AI Assistant Overhaul
+- **Problem:** AI Assistant kept repeating responses — only 17 chatty templates, no repeat tracking, smart replies from only 12 options
+- **Fix 1:** Expanded `chatty` array 17→26 with context-aware variants based on `msgCount` (different tone at 3+ and 5+ messages)
+- **Fix 2:** Added `freshReplies` global array with 20 diverse smart suggestions (was 12)
+- **Fix 3:** Added `_globalUsedIndices` tracking — prevents repeat responses within a session
+- **Fix 4:** Joke pool expanded 6→10 unique jokes
+- **Fix 5:** Added 3+ response variants to every intent type
+
+### Gemini AI Integration (NEW)
+- **Created `src/lib/gemini.ts`** — Gemini 2.0 Flash API client with:
+  - System prompt defining SY-DAVET personality (short, fun, human, Pi marketplace expert)
+  - `generateGeminiResponse()` — sends conversation history + user message to Gemini
+  - Falls back to template responses if API fails or not configured
+  - Safety settings disabled for natural conversation
+  - Temperature 0.9 for creative responses, max 200 tokens
+- **Updated `AiAssistantPage.tsx`**:
+  - Imports Gemini client
+  - `handleSend()` tries Gemini first when `VITE_GEMINI_API_KEY` is set
+  - Falls back to template-based response if Gemini fails or key missing
+  - Shows "AI" badge in header when Gemini is active (purple gradient `Zap` icon)
+- **Created `.env`** with `GEMINI_API_KEY` + `VITE_GEMINI_API_KEY` (local only, gitignored)
+- **User provided Gemini API key** from Google AI Studio (free tier)
+
+### Image Accuracy Fixes
+- **NPK Fertilizer:** Was using different image in Marketplace (`1506803682981`) vs ProductDetails (`1600585154340`) — unified to `1600585154340` (fertilizer bag image)
+- **Golden Retriever Puppy:** Was using different image in Marketplace (`1559847844`) vs ProductDetails (`1552053831`) — unified to `1552053831` (golden retriever)
+- **Cassava category:** Was using same image as NPK Fertilizer (`1506803682981`) — changed to `1574323347407`
+- **Pets category:** Changed to `1552053831` for consistency with product detail page
+- **Deleted `src/App.css`** — 184 lines of dead Vite scaffold CSS, completely unused
+
+### Categories Mock Data
+- **Added 13 missing categories** to `mockProductsByCategory` in Categories.tsx:
+  - yam (3 products), cassava (3), maize (3), vegetables (5), fruits (4), livestock (3), poultry (3), fishery (3), dairy (3), honey (2), farm-tools (3), fertilizers (3), seeds (3), pets (2)
+- **Total: 51 products across all 16 categories** (was only 15 products across 3 categories)
+
+### Deployment Notes
+- `GEMINI_API_KEY` must be set in **Vercel dashboard** (Settings → Environment Variables) for production
+- The code checks `VITE_GEMINI_API_KEY || GEMINI_API_KEY` so both work
+- `.env` is gitignored — local only
+- When no API key is set, the AI Assistant falls back to template responses (no crash)
+
+### Build
+- **Build: ✅ 0 errors** (tsc + vite build in 8.53s, 2202 modules)**
+
 ## What David Wants From Me
 1. **Save EVERYTHING continuously** — every thought, decision, detail, writeup, as I type. Even mid-thinking. No waiting until the end.
 2. **Don't end conversations with a save** — save as you go.
