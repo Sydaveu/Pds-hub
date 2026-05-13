@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Loader2, Smartphone } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 
 export function Login() {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithPi } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as any)?.from?.pathname || '/home';
@@ -18,6 +18,16 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [piLoading, setPiLoading] = useState(false);
+
+  const handlePiSignIn = async () => {
+    setError(null);
+    setPiLoading(true);
+    const { error } = await signInWithPi();
+    if (error) setError(error);
+    else navigate(from, { replace: true });
+    setPiLoading(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +80,27 @@ export function Login() {
           </div>
 
           <div className="p-8">
+            <button
+              onClick={handlePiSignIn}
+              disabled={piLoading}
+              className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-60 text-white font-semibold py-3.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-3 mb-4 text-base"
+            >
+              {piLoading ? (
+                <><Loader2 className="h-5 w-5 animate-spin" /> Connecting to Pi...</>
+              ) : (
+                <><Smartphone className="h-5 w-5" /> Sign in with Pi Network</>
+              )}
+            </button>
+
+            <div className="relative mb-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-[#09090b] px-4 text-gray-500">or continue with email</span>
+              </div>
+            </div>
+
             <div className="flex rounded-xl overflow-hidden border border-white/10 mb-8">
               {(['login', 'signup'] as const).map(m => (
                 <button

@@ -79,6 +79,45 @@ npm run build  # Production build to dist/
   - Critical rules list (do NOT break: buying-only, dark theme, AI assistant, error boundary, lazy loading, mobile-first)
   - Deployment + verification checklist
 
+## Session 3b — 13 May 2026 (AI Chatbot Upgrade)
+- **Problem:** AI chatbot had no memory — every message was isolated, no context, lost on refresh
+- **Fixes applied to `AiAssistantPage.tsx`:**
+  - **localStorage persistence** — messages auto-save after every exchange, survive page refresh
+  - **Conversation context tracking** (`useRef<ChatContext>`) — remembers lastIntent, lastCategory, followUpDepth
+  - **Context-aware follow-up detection** — short queries like "show me", "how much", "pictures", "tell me more" reuse last intent; pronoun refs ("it", "that", "them") also use context
+  - **Dual clear buttons** — "New conversation" (greeting-only reset) + "Delete all history" (trash icon, full wipe)
+  - **Session message count** shown in header subtitle
+- **Build: ✅ 0 errors** (tsc + vite build in 5.27s)
+
+## Session 3c — 13 May 2026 (Accurate Product Images)
+- **Fixed 3 broken/incorrect product images in AI Assistant `AiAssistantPage.tsx`:**
+  - **Beans:** `photo-1612257416648-2ac09c193a50` (404) → `photo-1557804506-669a67965ba0` (real mixed beans)
+  - **Maize:** `photo-1601593768793-4d3ab7d7a7f7` (404) → `photo-1514326640560-7d063ef2aed5` (real yellow corn) + added 2nd image `photo-1551754655-cd27e38d2076` (corn on the cob)
+  - **Tools:** was using same image as seeds (wrong!) → `photo-1597848212624-a19eb35e2651` (real garden tools)
+- **Build: ✅ 0 errors**
+
+## Session 4 — 13 May 2026 (Massive Image Expansion: 1,300 Images)
+- **Task:** Add 1,300 real product images across the entire site
+- **Created `src/lib/images.ts`** — shared image library with 29 verified Unsplash IDs across 17 categories
+- **Created `src/lib/products.ts`** — 260+ products covering African + Western foods (Rice, Beans, Maize, Yam, Cassava, Vegetables, Fruits, Livestock, Poultry, Fishery, Dairy, Honey, Seeds, Tools, Fertilizers, Pets, Oils)
+- **Updated all pages** to use shared product data:
+  - Home.tsx — 12 featured products, 8 category cards
+  - Marketplace.tsx — 260+ products with search + filter
+  - ProductDetails.tsx — gallery images from shared pool
+  - Categories.tsx — all 17 categories populated
+- Each product has 5 gallery images = 1,300+ total image slots
+- **Build: ✅ 0 errors**
+
+## Session 5 — 13 May 2026 (Pi Network Authentication)
+- **Task:** Implement Pi Network user authentication (init, authenticate, validate)
+- **Created `src/lib/pi.ts`** — Pi SDK wrapper: `initPi()`, `authenticatePi()`, `validatePiToken()`
+- **Updated `src/lib/auth.tsx`** — added `piUser` state, `signInWithPi()` method, auto-trigger Pi auth on app load
+- **Updated `index.html`** — added Pi SDK sandbox script
+- **Updated `src/pages/Login.tsx`** — added "Sign in with Pi" button
+- **Build: ✅ 0 errors**
+
+## What David Wants From Me
+
 ## What David Wants From Me
 1. **Save EVERYTHING continuously** — every thought, decision, detail, writeup, as I type. Even mid-thinking. No waiting until the end.
 2. **Don't end conversations with a save** — save as you go.

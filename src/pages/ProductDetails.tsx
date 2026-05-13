@@ -5,47 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ProductCard } from '../components/product-card/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../lib/auth';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  gallery: string[];
-  category: string;
-  description: string;
-  rating: number;
-  reviews: number;
-  stock: number;
-  unit: string;
-  origin: string;
-}
-
-const allProducts: Record<string, Product> = {
-  'c1': { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=800&q=80', 'https://images.unsplash.com/photo-1556912051-8f9ef55cb370?auto=format&fit=crop&w=800&q=80'], category: 'Rice', description: 'High-quality long grain rice, aged to perfection for optimal flavor and texture. Each grain is carefully selected and polished to ensure uniform size and purity.', rating: 4.8, reviews: 124, stock: 50, unit: 'bag', origin: 'Northern Nigeria' },
-  'c2': { id: 'c2', name: 'Basmathi Rice (10kg)', price: 22, image: 'https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1563729784474-d07d79ec55a0?auto=format&fit=crop&w=800&q=80'], category: 'Rice', description: 'Premium basmati rice with aromatic fragrance and long grains. Perfect for biryanis and pilaf dishes.', rating: 4.9, reviews: 89, stock: 30, unit: 'bag', origin: 'Northern Nigeria' },
-  'c3': { id: 'c3', name: 'Brown Rice (5kg)', price: 12, image: 'https://images.unsplash.com/photo-1556912051-8f9ef55cb370?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1556912051-8f9ef55cb370?auto=format&fit=crop&w=800&q=80'], category: 'Rice', description: 'Nutritious brown rice with bran layer intact. Rich in fiber and essential minerals.', rating: 4.7, reviews: 67, stock: 100, unit: 'bag', origin: 'Central Nigeria' },
-  'c4': { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'], category: 'Beans', description: 'Protein-rich black eyed beans, organically grown without pesticides. High in protein, fiber, and essential minerals.', rating: 4.9, reviews: 45, stock: 80, unit: 'kg', origin: 'Southern Nigeria' },
-  'c5': { id: 'c5', name: 'Yellow Maize (Corn) (10kg)', price: 18, image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80'], category: 'Maize', description: 'Sweet yellow maize kernels, perfect for roasting, boiling, or grinding into flour. Non-GMO and naturally grown.', rating: 4.7, reviews: 67, stock: 100, unit: 'kg', origin: 'Central Nigeria' },
-  'c6': { id: 'c6', name: 'Fresh Tomatoes (5kg box)', price: 12, image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80'], category: 'Vegetables', description: 'Ripe, juicy tomatoes perfect for salads and cooking. Farm fresh and full of vitamins.', rating: 4.8, reviews: 56, stock: 60, unit: 'box', origin: 'Plateau State' },
-  'c7': { id: 'c7', name: 'Organic Carrots (3kg)', price: 10, image: 'https://images.unsplash.com/photo-1591876323328-770d49ba3955?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1591876323328-770d49ba3955?auto=format&fit=crop&w=800&q=80'], category: 'Vegetables', description: 'Sweet, crunchy organic carrots, rich in beta-carotene and antioxidants.', rating: 4.9, reviews: 78, stock: 120, unit: 'kg', origin: 'Jos, Nigeria' },
-  'c8': { id: 'c8', name: 'Red Bell Peppers (2kg)', price: 15, image: 'https://images.unsplash.com/photo-1589274270882-3330a129c9f5?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1589274270882-3330a129c9f5?auto=format&fit=crop&w=800&q=80'], category: 'Vegetables', description: 'Vibrant red bell peppers, sweet and crisp. Perfect for stir-fries, salads and stuffing.', rating: 4.8, reviews: 34, stock: 50, unit: 'kg', origin: 'Plateau State' },
-  'c9': { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: 'https://images.unsplash.com/photo-1583396580942-3380ac6d5bee?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1583396580942-3380ac6d5bee?auto=format&fit=crop&w=800&q=80'], category: 'Fruits', description: 'Juicy ripe mangoes, perfect for smoothies and snacks. Packed with vitamins A and C.', rating: 4.9, reviews: 90, stock: 200, unit: 'pack', origin: 'Benue State' },
-  'c10': { id: 'c10', name: 'Fresh Pineapples (5pcs)', price: 18, image: 'https://images.unsplash.com/photo-1567306225709-6d9b96d23a3e?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1567306225709-6d9b96d23a3e?auto=format&fit=crop&w=800&q=80'], category: 'Fruits', description: 'Golden pineapples, rich in vitamin C and bromelain. Naturally sweet and juicy.', rating: 4.8, reviews: 43, stock: 80, unit: 'pack', origin: 'Cross River State' },
-  'c11': { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80'], category: 'Livestock', description: 'Healthy live goat, suitable for breeding or meat. Properly vaccinated and certified.', rating: 4.7, reviews: 28, stock: 15, unit: 'head', origin: 'Kaduna State' },
-  'c12': { id: 'c12', name: 'Broiler Chicken (2kg)', price: 25, image: 'https://images.unsplash.com/photo-1582722573459-23b5b8e03dc2?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1582722573459-23b5b8e03dc2?auto=format&fit=crop&w=800&q=80'], category: 'Poultry', description: 'Tender broiler chicken, raised without antibiotics. Fresh and ready for cooking.', rating: 4.8, reviews: 65, stock: 40, unit: 'bird', origin: 'Lagos State' },
-  'c13': { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=800&q=80'], category: 'Fishery', description: 'Freshwater tilapia, clean and firm texture. Caught fresh from local fish farms.', rating: 4.9, reviews: 72, stock: 60, unit: 'kg', origin: 'Niger State' },
-  'c14': { id: 'c14', name: 'Fresh Cow Milk (10L)', price: 20, image: 'https://images.unsplash.com/photo-1589110383685-8b48970aea14?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1589110383685-8b48970aea14?auto=format&fit=crop&w=800&q=80'], category: 'Dairy', description: 'Pure cow milk, rich in calcium and protein. Collected fresh daily from grass-fed cows.', rating: 4.8, reviews: 55, stock: 30, unit: 'litre', origin: 'Kano State' },
-  'c15': { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=800&q=80'], category: 'Honey', description: 'Pure natural honey, unfiltered and unpasteurized. Rich in antioxidants and antibacterial properties.', rating: 4.9, reviews: 110, stock: 80, unit: 'jar', origin: 'Plateau State' },
-  'c16': { id: 'c16', name: 'Hoe Tool Set (3pcs)', price: 45, image: 'https://images.unsplash.com/photo-1581091863477-7e58664e5e89?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1581091863477-7e58664e5e89?auto=format&fit=crop&w=800&q=80'], category: 'Farm Tools', description: 'Durable hoe set for weeding and soil preparation. Heavy-duty steel with ergonomic handles.', rating: 4.7, reviews: 38, stock: 25, unit: 'set', origin: 'Made in Nigeria' },
-  'c17': { id: 'c17', name: 'NPK Fertilizer (25kg bag)', price: 60, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'], category: 'Fertilizers', description: 'Balanced NPK fertilizer for optimal crop growth. Suitable for all soil types and crop varieties.', rating: 4.8, reviews: 44, stock: 100, unit: 'bag', origin: 'Nigeria' },
-  'c18': { id: 'c18', name: 'Maize Seeds (2kg)', price: 12, image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80'], category: 'Seeds', description: 'High-yield maize seeds, treated and ready for planting. 95% germination rate guaranteed.', rating: 4.7, reviews: 29, stock: 150, unit: 'pack', origin: 'IITA Certified' },
-  'c19': { id: 'c19', name: 'Golden Retriever Puppy', price: 200, image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80'], category: 'Pets', description: 'Friendly golden retriever puppy, vaccinated and dewormed. Health certificate included.', rating: 4.9, reviews: 22, stock: 5, unit: 'puppy', origin: 'Lagos State' },
-  '1': { id: '1', name: 'Premium Rice Bag (50kg)', price: 25, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80'], category: 'Rice', description: 'Premium quality long grain rice in a 50kg bag. Perfect for families and bulk buyers.', rating: 4.8, reviews: 124, stock: 50, unit: 'bag', origin: 'Northern Nigeria' },
-  '2': { id: '2', name: 'Fresh Organic Beans', price: 20, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'], category: 'Beans', description: 'Nutrient-rich organic beans, grown without pesticides. High in protein and fiber.', rating: 4.9, reviews: 89, stock: 30, unit: 'kg', origin: 'Southern Nigeria' },
-  '3': { id: '3', name: 'Yellow Maize (Corn)', price: 18, image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80'], category: 'Maize', description: 'Sweet yellow maize kernels, perfect for roasting or grinding. Non-GMO.', rating: 4.7, reviews: 67, stock: 100, unit: 'kg', origin: 'Central Nigeria' },
-  '4': { id: '4', name: 'Farm Fresh Tomatoes', price: 15, image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80', gallery: ['https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80'], category: 'Vegetables', description: 'Farm-fresh tomatoes, ripe and full of flavor. Perfect for cooking and salads.', rating: 4.8, reviews: 56, stock: 60, unit: 'kg', origin: 'Plateau State' },
-};
+import { getProductById, getProductsByCategory } from '../lib/products';
+import type { Product } from '../lib/products';
 
 export function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -53,7 +14,7 @@ export function ProductDetails() {
   const { addItem, isInCart } = useCart();
   const { user } = useAuth();
 
-  const product = allProducts[id || ''];
+  const product = id ? getProductById(id) : undefined;
   const [mainImage, setMainImage] = useState(product?.image || '');
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
@@ -105,8 +66,8 @@ export function ProductDetails() {
     navigate('/checkout');
   };
 
-  const relatedProducts = Object.values(allProducts)
-    .filter(p => p.category === product.category && p.id !== product.id)
+  const relatedProducts = getProductsByCategory(product.category)
+    .filter(p => p.id !== product.id)
     .slice(0, 4);
 
   return (
@@ -153,7 +114,7 @@ export function ProductDetails() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs bg-purple-600/20 text-purple-400 px-2.5 py-1 rounded-full">{product.category}</span>
-              {product.stock > 0 && (
+              {(product.stock ?? 0) > 0 && (
                 <span className="text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" /> In Stock
                 </span>
@@ -174,7 +135,7 @@ export function ProductDetails() {
               ))}
             </div>
             <span className="text-white font-medium">{product.rating}</span>
-            <span className="text-gray-400 text-sm">({product.reviews} reviews)</span>
+            <span className="text-gray-400 text-sm">({product.reviews ?? 0} reviews)</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -182,7 +143,7 @@ export function ProductDetails() {
             <span>Origin: {product.origin}</span>
             <span className="ml-4">
               <Package className="h-4 w-4 text-purple-400 inline mr-1" />
-              {product.stock} available
+              {product.stock ?? 0} available
             </span>
           </div>
 
@@ -192,7 +153,7 @@ export function ProductDetails() {
             <div className="flex items-center border border-white/10 rounded-xl overflow-hidden">
               <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-lg font-bold">-</button>
               <span className="px-6 py-3 text-white font-medium">{quantity}</span>
-              <button onClick={() => setQuantity(q => Math.min(product.stock, q + 1))} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-lg font-bold">+</button>
+              <button onClick={() => setQuantity(q => Math.min(product.stock ?? 99, q + 1))} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-lg font-bold">+</button>
             </div>
             <span className="text-gray-500 text-sm">× {product.price}π = <span className="text-purple-400 font-bold">{(quantity * product.price).toFixed(0)}π</span></span>
           </div>

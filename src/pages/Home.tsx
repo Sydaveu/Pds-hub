@@ -2,25 +2,21 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag, Users, Package, Clock } from 'lucide-react';
 import { ProductCard } from '../components/product-card/ProductCard';
+import allProducts from '../lib/products';
+import { CATEGORY_LIST } from '../lib/products';
+import { getImageUrl } from '../lib/images';
 
-const featuredProducts = [
-  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80', category: 'Rice', rating: 4.8 },
-  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80', category: 'Beans', rating: 4.9 },
-  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: 'https://images.unsplash.com/photo-1583396580942-3380ac6d5bee?auto=format&fit=crop&w=400&q=80', category: 'Fruits', rating: 4.9 },
-  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=400&q=80', category: 'Livestock', rating: 4.7 },
-  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=400&q=80', category: 'Honey', rating: 4.9 },
-  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=400&q=80', category: 'Fishery', rating: 4.9 },
-];
+const featuredProducts = allProducts.slice(0, 12);
 
-const categories = [
-  { name: 'Crops', slug: 'crops', emoji: '🌾', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80', desc: 'Grains & cereals' },
-  { name: 'Vegetables', slug: 'vegetables', emoji: '🥬', image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80', desc: 'Fresh & organic' },
-  { name: 'Fruits', slug: 'fruits', emoji: '🍎', image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?auto=format&fit=crop&w=800&q=80', desc: 'Tropical varieties' },
-  { name: 'Livestock', slug: 'livestock', emoji: '🐄', image: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80', desc: 'Cattle & goats' },
-  { name: 'Fishery', slug: 'fishery', emoji: '🐟', image: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=800&q=80', desc: 'Fresh seafood' },
-  { name: 'Honey', slug: 'honey', emoji: '🍯', image: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=800&q=80', desc: 'Natural honey' },
-  { name: 'Farm Tools', slug: 'farm-tools', emoji: '🔧', image: 'https://images.unsplash.com/photo-1581091863477-7e58664e5e89?auto=format&fit=crop&w=800&q=80', desc: 'Quality tools' },
-  { name: 'Seeds', slug: 'seeds', emoji: '🌱', image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80', desc: 'Quality seeds' },
+const homeCategories = [
+  { name: 'Vegetables', slug: 'vegetables', emoji: '\uD83E\uDD6C', desc: 'Fresh & organic' },
+  { name: 'Fruits', slug: 'fruits', emoji: '\uD83C\uDF4E', desc: 'Tropical varieties' },
+  { name: 'Livestock', slug: 'livestock', emoji: '\uD83D\uDC04', desc: 'Cattle & goats' },
+  { name: 'Fishery', slug: 'fishery', emoji: '\uD83D\uDC1F', desc: 'Fresh seafood' },
+  { name: 'Honey', slug: 'honey', emoji: '\uD83C\uDF6F', desc: 'Natural honey' },
+  { name: 'Farm Tools', slug: 'tools', emoji: '\uD83D\uDD27', desc: 'Quality tools' },
+  { name: 'Seeds', slug: 'seeds', emoji: '\uD83C\uDF31', desc: 'Quality seeds' },
+  { name: 'Rice', slug: 'rice', emoji: '\uD83C\uDF3E', desc: 'Premium grains' },
 ];
 
 const stats = [
@@ -180,7 +176,7 @@ export function Home() {
           viewport={{ once: true }}
           className="grid grid-cols-2 sm:grid-cols-4 gap-4"
         >
-          {categories.map(cat => (
+          {homeCategories.map(cat => (
             <motion.div key={cat.slug} variants={item}>
               <Link
                 to={`/categories?type=${cat.slug}`}
@@ -188,7 +184,7 @@ export function Home() {
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-500 group-hover:opacity-25 group-hover:scale-110"
-                  style={{ backgroundImage: `url(${cat.image})` }}
+                  style={{ backgroundImage: `url(${getImageUrl(cat.slug)})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="relative z-10">

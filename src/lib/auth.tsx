@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { supabase, isSupabaseConfigured } from './supabase';
 import type { User, Session } from '@supabase/supabase-js';
+import { initPi, authenticatePi, type PiUser } from './pi';
 
 interface AuthUser {
   id: string;
@@ -13,10 +14,12 @@ interface AuthContextType {
   user: AuthUser | null;
   session: Session | null;
   loading: boolean;
+  piUser: PiUser | null;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   updateProfile: (data: { username?: string; avatarUrl?: string }) => Promise<{ error: string | null }>;
+  signInWithPi: () => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,37 +37,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [piUser, setPiUser] = useState<PiUser | null>(null);
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) {
+    (async () => {
+      const piInitialized = await initPi();
+      if (piInitialized) {
+        const storedPi = localStorage.getItem('pds_pi_user');
+        if (storedPi) {
+          try {
+            const parsed = JSON.parse(storedPi) as PiUser;
+            setPiUser(parsed);
+            setUser({ id: parsed.uid, email: '', username: parsed.username, avatarUrl: null });
+            setLoading(false);
+            return;
+          } catch {}
+        }
+        const piAuthResult = await authenticatePi();
+        if (piAuthResult) {
+          localStorage.setItem('pds_pi_user', JSON.stringify(piAuthResult));
+          setPiUser(piAuthResult);
+          setUser({ id: piAuthResult.uid, email: '', username: piAuthResult.username, avatarUrl: null });
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (isSupabaseConfigured && supabase) {
+        supabase.auth.getSession().then(async ({ data: { session } }) => {
+          setSession(session);
+          if (session?.user) {
+            const profile = await fetchProfile(session.user.id);
+            setUser(mapUser(session.user, profile ?? undefined));
+          }
+          setLoading(false);
+        });
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+          setSession(session);
+          if (session?.user) {
+            const profile = await fetchProfile(session.user.id);
+            setUser(mapUser(session.user, profile ?? undefined));
+          } else {
+            setUser(null);
+          }
+        });
+        return () => subscription.unsubscribe();
+      }
+
       const stored = localStorage.getItem('pds_mock_user');
       if (stored) {
         try { setUser(JSON.parse(stored)); } catch {}
       }
       setLoading(false);
-      return;
-    }
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setUser(mapUser(session.user, profile ?? undefined));
-      }
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setUser(mapUser(session.user, profile ?? undefined));
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    })();
   }, []);
 
   const fetchProfile = async (userId: string) => {
@@ -117,15 +143,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null };
   };
 
+  const signInWithPi = async (): Promise<{ error: string | null }> => {
+    const result = await authenticatePi();
+    if (!result) return { error: 'Pi authentication failed or cancelled' };
+    localStorage.setItem('pds_pi_user', JSON.stringify(result));
+    setPiUser(result);
+    setUser({ id: result.uid, email: '', username: result.username, avatarUrl: null });
+    return { error: null };
+  };
+
   const signOut = async () => {
-    if (!isSupabaseConfigured || !supabase) {
-      setUser(null);
-      localStorage.removeItem('pds_mock_user');
-      return;
-    }
-    await supabase.auth.signOut();
+    localStorage.removeItem('pds_pi_user');
+    localStorage.removeItem('pds_mock_user');
+    setPiUser(null);
     setUser(null);
     setSession(null);
+    if (isSupabaseConfigured && supabase) {
+      await supabase.auth.signOut();
+    }
   };
 
   const updateProfile = async (data: { username?: string; avatarUrl?: string }): Promise<{ error: string | null }> => {
@@ -147,7 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, session, loading, piUser, signIn, signUp, signOut, updateProfile, signInWithPi }}>
       {children}
     </AuthContext.Provider>
   );
