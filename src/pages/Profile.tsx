@@ -1,496 +1,314 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Edit2, Upload, Image, Settings, MessageCircle, LayoutDashboard } from 'lucide-react';
+import { User, Edit2, Upload, LogOut, Package, Settings, Bell, Shield, Camera } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../lib/auth';
 
-interface UserProfile {
-  id: string;
-  username: string;
-  email: string;
-  avatarUrl: string | null;
-  animatedAvatar: string | null;
-  memberSince: string;
-  totalOrders: number;
-  totalSpent: number;
-  preferredCategory: string | null;
-}
+type Tab = 'overview' | 'orders' | 'settings';
 
-// Mock user data - in real app from Supabase/localStorage
-const mockUser: UserProfile = {
-  id: 'user_123',
-  username: 'FarmExpert2024',
-  email: 'user@example.com',
-  avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-  animatedAvatar: null,
-  memberSince: 'March 2024',
-  totalOrders: 15,
-  totalSpent: 320,
-  preferredCategory: 'Vegetables'
-};
+const AVATAR_OPTIONS = [
+  { emoji: '👨‍🌾', label: 'Farmer' },
+  { emoji: '🌾', label: 'Wheat' },
+  { emoji: '🥬', label: 'Veggie' },
+  { emoji: '🐄', label: 'Cow' },
+  { emoji: '🐔', label: 'Poultry' },
+  { emoji: '🐟', label: 'Fish' },
+  { emoji: '🍯', label: 'Honey' },
+  { emoji: '🌱', label: 'Seedling' },
+];
 
 export function Profile() {
+  const { user, signOut, updateProfile } = useAuth();
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserProfile>(mockUser);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<Tab>('overview');
   const [editMode, setEditMode] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'orders' | 'settings'>('overview');
-  const [isUploading, setIsUploading] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [animatedAvatarOptions, setAnimatedAvatarOptions] = useState<string[]>([]);
+  const [username, setUsername] = useState(user?.username || '');
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState('');
+  const [selectedEmoji, setSelectedEmoji] = useState('👨‍🌾');
 
-  useEffect(() => {
-    // Load animated avatar options (in real app from API)
-    setAnimatedAvatarOptions([
-      'https://raw.githubusercontent.com/lottiefiles/lottiefiles/master/examples/json/18397-farmer.json',
-      'https://raw.githubusercontent.com/lottiefiles/lottiefiles/master/examples/json/18398-tractor.json',
-      'https://raw.githubusercontent.com/lottiefiles/lottiefiles/master/examples/json/18399-crop.json',
-      'https://raw.githubusercontent.com/lottiefiles/lottiefiles/master/examples/json/18400-cow.json',
-      'https://raw.githubusercontent.com/lottiefiles/lottiefiles/master/examples/json/18401-chicken.json'
-    ]);
-  }, []);
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/home');
+  };
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSave = async () => {
+    if (username.length < 3) return;
+    setSaving(true);
+    const { error } = await updateProfile({ username });
+    setSaving(false);
+    if (!error) {
+      setSavedMsg('Profile saved!');
+      setEditMode(false);
+      setTimeout(() => setSavedMsg(''), 2500);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
-      return;
-    }
-    
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
-      alert('File size too large. Maximum 5MB allowed.');
-      return;
-    }
-    
-    setIsUploading(true);
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 5 * 1024 * 1024) { alert('Max 5MB'); return; }
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result as string);
-      setIsUploading(false);
-      // In real app: upload to storage and update user.avatarUrl
-      setTimeout(() => {
-        setUser(prev => ({ ...prev, avatarUrl: reader.result as string }));
-        setAvatarPreview(null);
-      }, 1000);
+    reader.onloadend = async () => {
+      await updateProfile({ avatarUrl: reader.result as string });
     };
     reader.readAsDataURL(file);
   };
 
-  const handleAnimatedAvatarSelect = (url: string) => {
-    setUser(prev => ({ ...prev, animatedAvatar: url }));
-  };
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser(prev => ({ ...prev, username: e.target.value }));
-  };
-
-  const handleSaveProfile = () => {
-    setEditMode(false);
-    // In real app: save to Supabase
-    alert('Profile saved successfully!');
-  };
-
-  const handleLogout = () => {
-    // In real app: clear session and redirect to login
-    navigate('/');
-  };
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-4">
+        <User className="h-12 w-12 text-gray-500" />
+        <h2 className="text-2xl font-bold text-white">Not Logged In</h2>
+        <Link to="/login" className="bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 px-8 rounded-xl transition-all">
+          Sign In
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 py-6 max-w-4xl mx-auto">
       {/* Profile Header */}
-      <div className="flex flex-col items-center gap-6 text-center py-12">
-        <div className="relative w-24 h-24">
-          {user.avatarUrl ? (
-            <img 
-              src={user.avatarUrl} 
-              alt={`${user.username}'s avatar`} 
-              className="w-full h-full object-cover rounded-full border-4 border-pi-pulse/20"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80';
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-muted/50 flex items-center justify-center rounded-full">
-              <User className="h-8 w-8 text-muted-foreground" />
-            </div>
-          )}
-          {!editMode && (
-            <div className="absolute bottom-0 right-0 w-8 h-8 bg-pi-pulse rounded-full flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-background">
-              <Edit2 className="h-4 w-4" />
-            </div>
-          )}
-        </div>
-        
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-          {user.username}
-        </h1>
-        
-        <p className="text-muted-foreground">
-          {user.email}
-        </p>
-        
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setEditMode(!editMode)}
-            className={editMode ? 
-              'bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300' : 
-              'border border-pi-pulse/50 hover:border-pi-pulse/100 text-pi-purple hover:bg-pi-purple/10 py-2 px-4 rounded-lg transition-colors duration-300'
-            }
-          >
-            {editMode ? 'Save' : 'Edit Profile'}
-          </button>
-          
-          <button 
-            onClick={handleLogout}
-            className="text-muted-foreground hover:text-destructive hover:underline"
-          >
-            Log Out
-          </button>
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card rounded-2xl border border-purple-500/10 p-8 text-center relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.08),transparent_70%)]" />
+        <div className="relative">
+          <div className="relative inline-block mb-4">
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user.username}
+                className="w-24 h-24 rounded-full object-cover border-4 border-purple-500/30 mx-auto"
+                onError={e => { (e.target as HTMLImageElement).src = ''; }} />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-indigo-800 flex items-center justify-center text-4xl border-4 border-purple-500/30 mx-auto">
+                {selectedEmoji}
+              </div>
+            )}
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-gray-900 hover:bg-purple-500 transition-colors"
+            >
+              <Camera className="h-3.5 w-3.5 text-white" />
+            </button>
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+          </div>
 
-      {/* Edit Mode Form */}
-      {editMode && (
-        <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <label htmlFor="username" className="block text-sm font-medium text-muted-foreground">
-                  Username
-                </label>
+          <h1 className="text-2xl font-bold text-white">{user.username}</h1>
+          <p className="text-gray-400 text-sm mt-1">{user.email}</p>
+
+          {savedMsg && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-green-400 text-sm mt-2">{savedMsg}</motion.p>
+          )}
+
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <button
+              onClick={() => setEditMode(v => !v)}
+              className="flex items-center gap-2 border border-purple-500/40 hover:border-purple-500 text-purple-400 hover:text-white text-sm font-medium py-2 px-4 rounded-xl transition-all"
+            >
+              <Edit2 className="h-3.5 w-3.5" /> {editMode ? 'Cancel' : 'Edit Profile'}
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2 border border-white/10 hover:border-red-500/40 text-gray-400 hover:text-red-400 text-sm font-medium py-2 px-4 rounded-xl transition-all"
+            >
+              <LogOut className="h-3.5 w-3.5" /> Sign Out
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Edit Form */}
+      <AnimatePresence>
+        {editMode && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="glass-card rounded-2xl border border-purple-500/10 p-6 space-y-6">
+              <h3 className="text-white font-semibold">Edit Profile</h3>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Username</label>
                 <input
-                  id="username"
                   type="text"
-                  value={user.username}
-                  onChange={handleUsernameChange}
-                  className="w-full px-4 py-3 bg-muted/50 border border-muted/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-pi-purple/20"
-                  required
-                  minLength={3}
-                  maxLength={20}
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500 transition-all"
+                  minLength={3} maxLength={20}
                 />
-                {user.username.length < 3 && (
-                  <p className="text-xs text-destructive mt-1">
-                    Username must be at least 3 characters
-                  </p>
+                {username.length < 3 && username.length > 0 && (
+                  <p className="text-red-400 text-xs mt-1">Username must be at least 3 characters</p>
                 )}
               </div>
-              
-              <div className="space-y-4">
-                <label htmlFor="avatarUpload" className="block text-sm font-medium text-muted-foreground">
-                  Profile Picture
-                </label>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <Upload className="h-4 w-4 text-muted-foreground" />
-                    <span>Upload new avatar</span>
-                  </div>
-                  <input
-                    id="avatarUpload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleAvatarUpload}
-                  />
-                  {isUploading && (
-                    <div className="flex items-center justify-center">
-                      <div className="h-4 w-4 animate-pulse bg-pi-pulse" />
-                      <span className="ml-2 text-sm text-pi-pulse">Uploading...</span>
-                    </div>
-                  )}
-                  {avatarPreview && (
-                    <div className="mt-3">
-                      <p className="text-xs text-muted-foreground mb-1">Preview:</p>
-                      <img 
-                        src={avatarPreview} 
-                        alt="Avatar preview" 
-                        className="w-24 h-24 object-cover rounded-lg border-2 border-pi-pulse"
-                      />
-                    </div>
-                  )}
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-3">Choose Avatar Emoji</label>
+                <div className="flex flex-wrap gap-2">
+                  {AVATAR_OPTIONS.map(opt => (
+                    <button
+                      key={opt.emoji}
+                      onClick={() => setSelectedEmoji(opt.emoji)}
+                      className={`w-12 h-12 rounded-xl text-2xl transition-all ${
+                        selectedEmoji === opt.emoji ? 'bg-purple-600/30 border-2 border-purple-500' : 'bg-white/5 border-2 border-white/10 hover:border-purple-500/50'
+                      }`}
+                      title={opt.label}
+                    >
+                      {opt.emoji}
+                    </button>
+                  ))}
                 </div>
               </div>
-              
-              <div className="space-y-4">
-                <label htmlFor="animatedAvatar" className="block text-sm font-medium text-muted-foreground">
-                  Animated Avatar (Lottie)
-                </label>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-3">
-                    {animatedAvatarOptions.map((url, index) => (
-                      <div 
-                        key={index} 
-                        className={`relative w-20 h-20 cursor-pointer 
-                          ${user.animatedAvatar === url ? 'border-2 border-pi-pulse' : ''}
-                          hover:border-pi-pulse/50`}
-                        onClick={() => handleAnimatedAvatarSelect(url)}
-                      >
-                        {/* In real app: show Lottie animation preview */}
-                        <div className="w-full h-full bg-muted/50 flex items-center justify-center rounded-lg overflow-hidden">
-                          <Image className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-center text-xs text-white">
-                          Option {index + 1}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Select an animated avatar for your profile
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex justify-end pt-4">
-                <button 
-                  type="button"
-                  onClick={() => setEditMode(false)}
-                  className="mr-4 text-muted-foreground hover:text-foreground hover:underline"
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Upload Photo</label>
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="flex items-center gap-2 border border-dashed border-white/20 hover:border-purple-500/50 text-gray-400 hover:text-white text-sm py-3 px-4 rounded-xl transition-all w-full justify-center"
                 >
-                  Cancel
+                  <Upload className="h-4 w-4" /> Click to upload (max 5MB)
                 </button>
-                <button 
-                  type="submit"
-                  onClick={handleSaveProfile}
-                  className="bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 hover:-translate-y-1"
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setEditMode(false)} className="text-gray-400 hover:text-white text-sm px-4 py-2 rounded-xl transition-colors">Cancel</button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || username.length < 3}
+                  className="bg-purple-600 hover:bg-purple-500 disabled:opacity-60 text-white font-medium py-2 px-6 rounded-xl transition-all"
                 >
-                  Save Changes
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </div>
-            </form>
-          </div>
+          </motion.div>
         )}
-        
+      </AnimatePresence>
+
       {/* Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        <button 
-          onClick={() => setSelectedTab('overview')}
-          className={selectedTab === 'overview' ? 
-            'bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300' : 
-            'border border-pi-pulse/50 hover:border-pi-pulse/100 text-pi-purple hover:bg-pi-purple/10 py-2 px-4 rounded-lg transition-colors duration-300'
-          }
-        >
-          Overview
-        </button>
-        <button 
-          onClick={() => setSelectedTab('orders')}
-          className={selectedTab === 'orders' ? 
-            'bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300' : 
-            'border border-pi-pulse/50 hover:border-pi-pulse/100 text-pi-purple hover:bg-pi-purple/10 py-2 px-4 rounded-lg transition-colors duration-300'
-          }
-        >
-          Orders
-        </button>
-        <button 
-          onClick={() => setSelectedTab('settings')}
-          className={selectedTab === 'settings' ? 
-            'bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300' : 
-            'border border-pi-pulse/50 hover:border-pi-pulse/100 text-pi-purple hover:bg-pi-purple/10 py-2 px-4 rounded-lg transition-colors duration-300'
-          }
-        >
-          Settings
-        </button>
+      <div className="flex gap-1 bg-white/3 p-1 rounded-xl border border-white/5">
+        {([
+          { id: 'overview', label: 'Overview', icon: User },
+          { id: 'orders', label: 'Orders', icon: Package },
+          { id: 'settings', label: 'Settings', icon: Settings },
+        ] as const).map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              tab === id ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Icon className="h-4 w-4" /> <span className="hidden sm:block">{label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
-      {selectedTab === 'overview' && (
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-4">Account Statistics</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center text-lg">
-                <span className="text-muted-foreground">Member Since</span>
-                <span className="font-medium text-foreground">{user.memberSince}</span>
-              </div>
-              <div className="flex justify-between items-center text-lg">
-                <span className="text-muted-foreground">Total Orders</span>
-                <span className="text-2xl font-bold text-pi-purple">{user.totalOrders}</span>
-              </div>
-              <div className="flex justify-between items-center text-lg">
-                <span className="text-muted-foreground">Total Spent</span>
-                <span className="text-2xl font-bold text-pi-purple">{user.totalSpent}π</span>
-              </div>
-              <div className="flex justify-between items-center text-lg">
-                <span className="text-muted-foreground">Preferred Category</span>
-                <span className="font-medium text-foreground">
-                  {user.preferredCategory || 'Not set'}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                <MessageCircle className="h-4 w-4 text-pi-pulse" />
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Order #PDS-7890 delivered</p>
-                  <p className="text-xs text-muted-foreground">2 hours ago • 5π</p>
-                </div>
-                <div className="text-pi-pulse text-xs">
-                  Delivered
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                <LayoutDashboard className="h-4 w-4 text-pi-pulse" />
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Bought 2x Premium Rice</p>
-                  <p className="text-xs text-muted-foreground">4 hours ago • 30π</p>
-                </div>
-                <div className="text-pi-pulse text-xs">
-                  Completed
-                </div>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
-                <Settings className="h-4 w-4 text-pi-pulse" />
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Updated profile picture</p>
-                  <p className="text-xs text-muted-foreground">6 hours ago</p>
-                </div>
-                <div className="text-pi-pulse text-xs">
-                  Updated
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {selectedTab === 'orders' && (
-        <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-          <h3 className="font-semibold text-lg mb-4">Order History</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
-              <div className="flex-1 space-y-1">
-                <p className="font-medium text-foreground">Order #PDS-7890</p>
-                <p className="text-xs text-muted-foreground">Delivered • Jun 12, 2024</p>
-              </div>
-              <div className="text-right space-y-1">
-                <p className="font-medium text-pi-purple">30π</p>
-                <p className="text-xs text-muted-foreground">2 items</p>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
-              <div className="flex-1 space-y-1">
-                <p className="font-medium text-foreground">Order #PDS-7889</p>
-                <p className="text-xs text-muted-foreground">Processing • Jun 10, 2024</p>
-              </div>
-              <div className="text-right space-y-1">
-                <p className="font-medium text-pi-purple">45π</p>
-                <p className="text-xs text-muted-foreground">3 items</p>
-              </div>
-            </div>
-            <div className="flex justify-between items-center p-4 bg-muted/50 rounded-lg">
-              <div className="flex-1 space-y-1">
-                <p className="font-medium text-foreground">Order #PDS-7888</p>
-                <p className="text-xs text-muted-foreground">Delivered • Jun 8, 2024</p>
-              </div>
-              <div className="text-right space-y-1">
-                <p className="font-medium text-pi-purple">22π</p>
-                <p className="text-xs text-muted-foreground">1 item</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 text-center">
-            <Link 
-              to="/orders" 
-              className="text-pi-purple hover:text-pi-purple/90 font-medium"
-            >
-              View All Orders
-            </Link>
-          </div>
-        </div>
-      )}
-      
-      {selectedTab === 'settings' && (
-        <div className="space-y-6">
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-4">Notifications</h3>
-            <div className="space-y-4">
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Order Updates</p>
-                  <p className="text-xs text-muted-foreground">Get notified when your order status changes</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-pi-pulse/20 rounded-full flex items-center justify-center">
-                    <span className="text-pi-pulse">●</span>
+      <AnimatePresence mode="wait">
+        {tab === 'overview' && (
+          <motion.div key="overview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid sm:grid-cols-2 gap-6">
+            <div className="glass-card rounded-2xl border border-white/5 p-6">
+              <h3 className="text-white font-semibold mb-4">Account Info</h3>
+              <div className="space-y-3">
+                {[
+                  { label: 'Username', value: user.username },
+                  { label: 'Email', value: user.email },
+                  { label: 'Member Since', value: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
+                    <span className="text-gray-400 text-sm">{label}</span>
+                    <span className="text-white text-sm font-medium truncate max-w-[140px]">{value}</span>
                   </div>
-                  <span className="text-xs text-pi-pulse">Enabled</span>
-                </div>
-              </label>
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Promotional Offers</p>
-                  <p className="text-xs text-muted-foreground">Receive special deals and discounts</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-muted/50 rounded-full flex items-center justify-center">
-                    <span className="text-pi-pulse">○</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Disabled</span>
-                </div>
-              </label>
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Newsletter</p>
-                  <p className="text-xs text-muted-foreground">Monthly updates and farming tips</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-pi-pulse/20 rounded-full flex items-center justify-center">
-                    <span className="text-pi-pulse">●</span>
-                  </div>
-                  <span className="text-xs text-pi-pulse">Enabled</span>
-                </div>
-              </label>
+                ))}
+              </div>
             </div>
-          </div>
-          
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6">
-            <h3 className="font-semibold text-lg mb-4">Privacy & Security</h3>
-            <div className="space-y-4">
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Two-Factor Authentication</p>
-                  <p className="text-xs text-muted-foreground">Extra security for your account</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-muted/50 rounded-full flex items-center justify-center">
-                    <span className="text-pi-pulse">○</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Disabled</span>
-                </div>
-              </label>
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Login Alerts</p>
-                  <p className="text-xs text-muted-foreground">Get alerted on new device logins</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-pi-pulse/20 rounded-full flex items-center justify-center">
-                    <span className="text-pi-pulse">●</span>
-                  </div>
-                  <span className="text-xs text-pi-pulse">Enabled</span>
-                </div>
-              </label>
-              <label className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-pointer">
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">Data Export</p>
-                  <p className="text-xs text-muted-foreground">Download your account data</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={() => alert('Data export initiated!')}
-                    className="text-pi-purple hover:text-pi-purple/90 underline"
-                  >
-                    Export Data
-                  </button>
-                </div>
-              </label>
+            <div className="glass-card rounded-2xl border border-white/5 p-6">
+              <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+              <div className="space-y-2">
+                <Link to="/marketplace" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white text-sm transition-colors">
+                  🛒 Browse Marketplace
+                </Link>
+                <Link to="/orders" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white text-sm transition-colors">
+                  <Package className="h-4 w-4 text-purple-400" /> View My Orders
+                </Link>
+                <Link to="/cart" className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 text-gray-300 hover:text-white text-sm transition-colors">
+                  🛒 View Cart
+                </Link>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+
+        {tab === 'orders' && (
+          <motion.div key="orders" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="glass-card rounded-2xl border border-white/5 p-6 text-center space-y-4">
+              <Package className="h-12 w-12 text-purple-400 mx-auto" />
+              <h3 className="text-white font-semibold">Order History</h3>
+              <p className="text-gray-400 text-sm">View your complete order history and track deliveries.</p>
+              <Link to="/orders" className="inline-block bg-purple-600 hover:bg-purple-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all">
+                View All Orders
+              </Link>
+            </div>
+          </motion.div>
+        )}
+
+        {tab === 'settings' && (
+          <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="glass-card rounded-2xl border border-white/5 p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2"><Bell className="h-4 w-4 text-purple-400" /> Notifications</h3>
+              <div className="space-y-3">
+                {[
+                  { label: 'Order Updates', desc: 'Status changes and delivery alerts', enabled: true },
+                  { label: 'Promotions', desc: 'Special deals and discounts', enabled: false },
+                  { label: 'Newsletter', desc: 'Monthly farming tips', enabled: true },
+                ].map(({ label, desc, enabled }) => (
+                  <div key={label} className="flex items-center justify-between p-3 rounded-xl bg-white/3">
+                    <div>
+                      <p className="text-white text-sm font-medium">{label}</p>
+                      <p className="text-gray-500 text-xs">{desc}</p>
+                    </div>
+                    <div className={`w-9 h-5 rounded-full flex items-center px-0.5 transition-colors ${enabled ? 'bg-purple-600' : 'bg-white/10'}`}>
+                      <div className={`w-4 h-4 bg-white rounded-full transition-transform ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="glass-card rounded-2xl border border-white/5 p-6">
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2"><Shield className="h-4 w-4 text-purple-400" /> Security</h3>
+              <div className="space-y-3">
+                {[
+                  { label: 'Two-Factor Authentication', desc: 'Extra security for your account', enabled: false },
+                  { label: 'Login Alerts', desc: 'Get notified on new device logins', enabled: true },
+                ].map(({ label, desc, enabled }) => (
+                  <div key={label} className="flex items-center justify-between p-3 rounded-xl bg-white/3">
+                    <div>
+                      <p className="text-white text-sm font-medium">{label}</p>
+                      <p className="text-gray-500 text-xs">{desc}</p>
+                    </div>
+                    <div className={`w-9 h-5 rounded-full flex items-center px-0.5 transition-colors ${enabled ? 'bg-purple-600' : 'bg-white/10'}`}>
+                      <div className={`w-4 h-4 bg-white rounded-full transition-transform ${enabled ? 'translate-x-4' : 'translate-x-0'}`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center pt-2">
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 border border-red-500/30 hover:border-red-500/60 text-red-400 hover:text-red-300 font-medium py-2.5 px-8 rounded-xl transition-all"
+              >
+                <LogOut className="h-4 w-4" /> Sign Out of Account
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

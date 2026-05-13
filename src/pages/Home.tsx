@@ -1,266 +1,230 @@
 import { Link } from 'react-router-dom';
-import { LoadingFallback } from '../components/layout/LoadingFallback';
+import { motion } from 'framer-motion';
+import { ArrowRight, ShoppingBag, Users, Package, Clock } from 'lucide-react';
 import { ProductCard } from '../components/product-card/ProductCard';
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  rating: number;
-}
-
-// Mock data - in real app this would come from Supabase
-const featuredProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Premium Rice Bag (50kg)',
-    price: 25,
-    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80',
-    category: 'Rice',
-    rating: 4.8
-  },
-  {
-    id: '2',
-    name: 'Fresh Organic Beans',
-    price: 20,
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80',
-    category: 'Beans',
-    rating: 4.9
-  },
-  {
-    id: '3',
-    name: 'Yellow Maize (Corn)',
-    price: 18,
-    image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=400&q=80',
-    category: 'Maize',
-    rating: 4.7
-  },
-  {
-    id: '4',
-    name: 'Farm Fresh Tomatoes',
-    price: 15,
-    image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=400&q=80',
-    category: 'Vegetables',
-    rating: 4.8
-  }
+const featuredProducts = [
+  { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80', category: 'Rice', rating: 4.8 },
+  { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80', category: 'Beans', rating: 4.9 },
+  { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: 'https://images.unsplash.com/photo-1583396580942-3380ac6d5bee?auto=format&fit=crop&w=400&q=80', category: 'Fruits', rating: 4.9 },
+  { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=400&q=80', category: 'Livestock', rating: 4.7 },
+  { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=400&q=80', category: 'Honey', rating: 4.9 },
+  { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=400&q=80', category: 'Fishery', rating: 4.9 },
 ];
+
+const categories = [
+  { name: 'Crops', slug: 'crops', emoji: '🌾', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80', desc: 'Grains & cereals' },
+  { name: 'Vegetables', slug: 'vegetables', emoji: '🥬', image: 'https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80', desc: 'Fresh & organic' },
+  { name: 'Fruits', slug: 'fruits', emoji: '🍎', image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?auto=format&fit=crop&w=800&q=80', desc: 'Tropical varieties' },
+  { name: 'Livestock', slug: 'livestock', emoji: '🐄', image: 'https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80', desc: 'Cattle & goats' },
+  { name: 'Fishery', slug: 'fishery', emoji: '🐟', image: 'https://images.unsplash.com/photo-1562584501-58b3b978aae3?auto=format&fit=crop&w=800&q=80', desc: 'Fresh seafood' },
+  { name: 'Honey', slug: 'honey', emoji: '🍯', image: 'https://images.unsplash.com/photo-1578782973178-ab70462fab3e?auto=format&fit=crop&w=800&q=80', desc: 'Natural honey' },
+  { name: 'Farm Tools', slug: 'farm-tools', emoji: '🔧', image: 'https://images.unsplash.com/photo-1581091863477-7e58664e5e89?auto=format&fit=crop&w=800&q=80', desc: 'Quality tools' },
+  { name: 'Seeds', slug: 'seeds', emoji: '🌱', image: 'https://images.unsplash.com/photo-1593642532843-3690d151cb38?auto=format&fit=crop&w=800&q=80', desc: 'Quality seeds' },
+];
+
+const stats = [
+  { value: '10K+', label: 'Trusted Farmers', icon: Users, color: 'from-purple-600 to-purple-800' },
+  { value: '50K+', label: 'Products Available', icon: Package, color: 'from-amber-500 to-amber-700' },
+  { value: '100%', label: 'Pi Payments', icon: ShoppingBag, color: 'from-purple-600 to-indigo-800' },
+  { value: '24/7', label: 'AI Support', icon: Clock, color: 'from-indigo-600 to-purple-800' },
+];
+
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
 export function Home() {
   return (
-    <div className="space-y-12">
-      {/* Hero Section */}
-      <section className="relative h-[600px] bg-pi-gradient overflow-hidden">
+    <div className="space-y-20">
+      {/* Hero */}
+      <section className="relative min-h-[600px] flex items-center overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1416879595882-3383a0084b0d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-20" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1416879595882-3383a0084b0d?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/60 via-black/40 to-indigo-900/40" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.2),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(251,191,36,0.1),transparent_60%)]" />
         </div>
-        <div className="relative z-10 flex h-full items-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl w-full text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-2xl">
+        <div className="relative z-10 w-full max-w-4xl mx-auto text-center py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-purple-600/20 border border-purple-500/30 rounded-full px-4 py-1.5 text-sm text-purple-300 mb-6 backdrop-blur-sm">
+              <span className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+              Powered by Pi Network
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
               From Soil to Soul<br />
-              <span className="block text-pi-gold">Powered by Pi</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">Powered by Pi</span>
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
-              Discover fresh, quality agricultural products directly from trusted farmers. 
-              Buy with Pi cryptocurrency and experience the future of farm-to-table commerce.
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+              Discover fresh, quality agricultural products from trusted farmers. Buy with Pi cryptocurrency — fast, secure, and borderless.
             </p>
-            <div className="flex justify-center space-x-4">
-              <Link 
-                to="/marketplace" 
-                className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-medium py-3 px-8 rounded-lg border border-white/20 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-1"
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                to="/marketplace"
+                className="group flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/30"
               >
-                Start Buying Now
+                Start Buying Now <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link 
-                to="/categories" 
-                className="border border-white/20 hover:border-white/30 text-white font-medium py-3 px-8 rounded-lg hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1"
+              <Link
+                to="/categories"
+                className="flex items-center gap-2 bg-white/5 backdrop-blur-sm hover:bg-white/10 text-white font-semibold py-4 px-8 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-1"
               >
                 Explore Categories
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Floating glow orbs */}
+        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-amber-500/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </section>
 
-      {/* Stats Section */}
-      <section className="relative">
-        <div className="relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.1),transparent)]" />
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 text-center">
-            <div className="flex flex-col items-center space-y-3">
-              <div className="text-pi-pulse animate-pulse w-12 h-12 bg-pi-purple/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-pi-purple">10K+</span>
+      {/* Stats */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          {stats.map(({ value, label, icon: Icon, color }) => (
+            <motion.div key={label} variants={item}
+              className="glass-card rounded-2xl border border-white/5 p-6 text-center hover:border-purple-500/20 transition-all"
+            >
+              <div className={`w-12 h-12 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                <Icon className="h-6 w-6 text-white" />
               </div>
-              <h3 className="font-semibold text-lg">Trusted Farmers</h3>
-              <p className="text-muted-foreground max-w-sm">Verified producers from across the region</p>
-            </div>
-            <div className="flex flex-col items-center space-y-3">
-              <div className="text-pi-pulse animate-pulse w-12 h-12 bg-pi-purple/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-pi-purple">50K+</span>
-              </div>
-              <h3 className="font-semibold text-lg">Products Available</h3>
-              <p className="text-muted-foreground max-w-sm">Fresh crops, livestock, and farm supplies</p>
-            </div>
-            <div className="flex flex-col items-center space-y-3">
-              <div className="text-pi-pulse animate-pulse w-12 h-12 bg-pi-purple/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-pi-purple">100%</span>
-              </div>
-              <h3 className="font-semibold text-lg">Pi Payments</h3>
-              <p className="text-muted-foreground max-w-sm">Secure transactions with Pi Network</p>
-            </div>
-            <div className="flex flex-col items-center space-y-3">
-              <div className="text-pi-pulse animate-pulse w-12 h-12 bg-pi-purple/10 rounded-full flex items-center justify-center">
-                <span className="text-2xl font-bold text-pi-purple">24/7</span>
-              </div>
-              <h3 className="font-semibold text-lg">Support</h3>
-              <p className="text-muted-foreground max-w-sm">Dedicated AI assistant always ready to help</p>
-            </div>
-          </div>
-        </div>
+              <div className="text-3xl font-bold text-white">{value}</div>
+              <div className="text-gray-400 text-sm mt-1">{label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
       {/* Featured Products */}
-      <section>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-center mb-4">
-              Featured Products
-            </h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto">
-              Handpicked quality products from our top-rated farmers
-            </p>
-          </div>
-          
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                className="hover:-translate-y-1 transition-transform duration-300"
-              />
-            ))}
-          </div>
-          
-          <div className="mt-8 text-center">
-            <Link 
-              to="/marketplace" 
-              className="bg-pi-purple hover:bg-pi-purple/90 text-white font-medium py-3 px-8 rounded-lg transition-colors duration-300"
-            >
-              Browse All Products
-            </Link>
-          </div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Featured Products</h2>
+          <p className="text-gray-400 max-w-xl mx-auto">Handpicked quality products from our top-rated farmers</p>
+        </div>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {featuredProducts.map(product => (
+            <motion.div key={product.id} variants={item}>
+              <ProductCard product={product} className="hover:-translate-y-1 transition-transform duration-300" />
+            </motion.div>
+          ))}
+        </motion.div>
+        <div className="mt-10 text-center">
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 px-8 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/25"
+          >
+            Browse All Products <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="relative">
-        <div className="relative">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.1),transparent)]" />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">How It Works</h2>
+          <p className="text-gray-400">Three simple steps to get fresh produce delivered</p>
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            How It Works
-          </h2>
-          <div className="grid gap-8 md:grid-cols-3 text-center">
-            <div className="flex flex-col items-center space-y-6">
-              <div className="w-16 h-16 bg-pi-purple/10 rounded-xl flex items-center justify-center">
-                <svg className="h-8 w-8 text-pi-purple" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v4.875h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
-                </svg>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid md:grid-cols-3 gap-8"
+        >
+          {[
+            { step: '01', icon: '🔍', title: 'Browse & Select', desc: 'Explore our marketplace and find exactly what you need from trusted farmers.' },
+            { step: '02', icon: '🥧', title: 'Buy with Pi', desc: 'Secure checkout using Pi Network cryptocurrency — fast, low-fee, and borderless.' },
+            { step: '03', icon: '📦', title: 'Get Delivered', desc: 'Your products are carefully packaged and delivered fresh to your doorstep.' },
+          ].map(({ step, icon, title, desc }) => (
+            <motion.div key={step} variants={item} className="glass-card rounded-2xl border border-white/5 p-8 text-center hover:border-purple-500/20 transition-all">
+              <div className="relative mb-5">
+                <div className="w-16 h-16 bg-purple-600/10 rounded-2xl flex items-center justify-center mx-auto text-3xl">
+                  {icon}
+                </div>
+                <span className="absolute top-0 right-1/3 text-xs font-bold text-purple-400/60">{step}</span>
               </div>
-              <h3 className="font-semibold text-lg">1. Browse & Select</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Explore our marketplace and find exactly what you need for your farm or home.
-              </p>
-            </div>
-            <div className="flex flex-col items-center space-y-6">
-              <div className="w-16 h-16 bg-pi-purple/10 rounded-xl flex items-center justify-center">
-                <svg className="h-8 w-8 text-pi-purple" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m2 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg">2. Buy with Pi</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Secure checkout using Pi Network cryptocurrency - fast, low-fee, and borderless.
-              </p>
-            </div>
-            <div className="flex flex-col items-center space-y-6">
-              <div className="w-16 h-16 bg-pi-purple/10 rounded-xl flex items-center justify-center">
-                <svg className="h-8 w-8 text-pi-purple" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h10a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2v-5" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v4h4a2 2 0 002-2V3H3z" />
-                </svg>
-              </div>
-              <h3 className="font-semibold text-lg">3. Get Delivered</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Your products are carefully packaged and delivered fresh to your doorstep.
-              </p>
-            </div>
-          </div>
-        </div>
+              <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
-      {/* Categories Preview */}
-      <section>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-center mb-4">
-              Shop by Category
-            </h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto">
-              Find everything you need organized by agricultural categories
-            </p>
-          </div>
-          
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Link 
-              to="/categories?type=crops" 
-              className="group relative overflow-hidden bg-muted/50 hover:bg-muted/100 transition-colors duration-300"
-            >
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-              <div className="relative z-10 flex flex-col items-center py-8 px-4 text-center">
-                <h3 className="font-semibold text-lg text-foreground">Crops</h3>
-                <p className="text-sm text-muted-foreground mt-1">Grains, cereals & more</p>
-              </div>
-            </Link>
-            
-            <Link 
-              to="/categories?type=vegetables" 
-              className="group relative overflow-hidden bg-muted/50 hover:bg-muted/100 transition-colors duration-300"
-            >
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1592924403410-0001ca42cb5e?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-              <div className="relative z-10 flex flex-col items-center py-8 px-4 text-center">
-                <h3 className="font-semibold text-lg text-foreground">Vegetables</h3>
-                <p className="text-sm text-muted-foreground mt-1">Fresh & organic produce</p>
-              </div>
-            </Link>
-            
-            <Link 
-              to="/categories?type=fruits" 
-              className="group relative overflow-hidden bg-muted/50 hover:bg-muted/100 transition-colors duration-300"
-            >
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-              <div className="relative z-10 flex flex-col items-center py-8 px-4 text-center">
-                <h3 className="font-semibold text-lg text-foreground">Fruits</h3>
-                <p className="text-sm text-muted-foreground mt-1">Seasonal & tropical varieties</p>
-              </div>
-            </Link>
-            
-            <Link 
-              to="/categories?type=livestock" 
-              className="group relative overflow-hidden bg-muted/50 hover:bg-muted/100 transition-colors duration-300"
-            >
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1583337130417-3346a1e7d9e9?auto=format&fit=crop&w=800&q=80')] bg-cover bg-center transition-transform duration-500 group-hover:scale-105" />
-              <div className="relative z-10 flex flex-col items-center py-8 px-4 text-center">
-                <h3 className="font-semibold text-lg text-foreground">Livestock</h3>
-                <p className="text-sm text-muted-foreground mt-1">Cattle, goats, sheep & more</p>
-              </div>
-            </Link>
-          </div>
+      {/* Categories Grid */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Shop by Category</h2>
+          <p className="text-gray-400">Find everything you need organized by agricultural categories</p>
         </div>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+        >
+          {categories.map(cat => (
+            <motion.div key={cat.slug} variants={item}>
+              <Link
+                to={`/categories?type=${cat.slug}`}
+                className="group relative overflow-hidden rounded-2xl h-36 flex flex-col items-center justify-center text-center glass-card border border-white/5 hover:border-purple-500/30 transition-all"
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center opacity-15 transition-all duration-500 group-hover:opacity-25 group-hover:scale-110"
+                  style={{ backgroundImage: `url(${cat.image})` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="relative z-10">
+                  <div className="text-3xl mb-1">{cat.emoji}</div>
+                  <h3 className="text-white font-semibold text-sm">{cat.name}</h3>
+                  <p className="text-gray-400 text-xs mt-0.5">{cat.desc}</p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-800 to-indigo-900 border border-purple-500/20 p-10 md:p-16 text-center"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.3),transparent_70%)]" />
+          <div className="relative z-10">
+            <div className="text-5xl mb-4">🌾</div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Start Buying?</h2>
+            <p className="text-purple-200 max-w-xl mx-auto mb-8">
+              Join thousands of buyers already using PDS Agri-Hub to source quality agricultural products with Pi.
+            </p>
+            <Link
+              to="/marketplace"
+              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-bold py-4 px-10 rounded-2xl transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-400/30"
+            >
+              Explore Marketplace <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </motion.div>
       </section>
     </div>
   );

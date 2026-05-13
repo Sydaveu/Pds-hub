@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../components/product-card/ProductCard';
-import type { ReactNode } from 'react';
 
 interface CategoryInfo {
   name: string;

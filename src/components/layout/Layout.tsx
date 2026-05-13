@@ -4,9 +4,9 @@ import type { ReactNode } from 'react';
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+    <div className="min-h-screen bg-[#09090b] flex flex-col">
       <Navbar />
-      <main className="pb-20">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </main>
       <Footer />
