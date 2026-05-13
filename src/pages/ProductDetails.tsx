@@ -6,92 +6,8 @@ import { ProductCard } from '../components/product-card/ProductCard';
 import { ProductImage } from '../components/ui/ProductImage';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../lib/auth';
+import { getProductById, getRelatedProducts } from '../lib/productData';
 import { getProductImage, getProductImageLarge } from '../lib/productImages';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  gallery: string[];
-  category: string;
-  description: string;
-  rating: number;
-  reviews: number;
-  stock: number;
-  unit: string;
-  origin: string;
-}
-
-const galleryKeywords: Record<string, string[]> = {
-  'long-grain-rice': ['long-grain-rice', 'basmati-rice', 'brown-rice'],
-  'basmati-rice': ['basmati-rice', 'rice'],
-  'brown-rice': ['brown-rice', 'rice'],
-  'black-eyed-beans': ['black-eyed-beans', 'kidney-beans'],
-  'maize': ['maize', 'corn-cob', 'maize'],
-  'corn-cob': ['corn-cob', 'maize'],
-  'tomatoes': ['tomatoes', 'vegetables'],
-  'carrots': ['carrots', 'vegetables'],
-  'bell-peppers': ['bell-peppers', 'vegetables'],
-  'mangoes': ['mangoes', 'fruits'],
-  'pineapples': ['pineapples', 'fruits'],
-  'goat': ['goat', 'livestock'],
-  'chicken': ['chicken', 'poultry'],
-  'tilapia': ['tilapia', 'fishery'],
-  'milk': ['milk', 'dairy'],
-  'honey': ['honey'],
-  'farm-tools': ['farm-tools'],
-  'npk-fertilizer': ['fertilizer'],
-  'maize-seeds': ['seeds'],
-  'golden-retriever': ['puppy'],
-  'yam': ['yam'],
-  'cow': ['cow', 'livestock'],
-  'beans': ['beans'],
-};
-
-function img(keyword: string) { return getProductImage(keyword); }
-function imgl(keyword: string) { return getProductImageLarge(keyword); }
-function gallery(keyword: string) {
-  const keys = galleryKeywords[keyword] || [keyword, keyword, keyword];
-  return keys.map(k => getProductImageLarge(k));
-}
-
-const productKeywords: Record<string, string> = {
-  'c1': 'long-grain-rice', 'c2': 'basmati-rice', 'c3': 'brown-rice',
-  'c4': 'black-eyed-beans', 'c5': 'maize', 'c6': 'tomatoes',
-  'c7': 'carrots', 'c8': 'bell-peppers', 'c9': 'mangoes',
-  'c10': 'pineapples', 'c11': 'goat', 'c12': 'chicken',
-  'c13': 'tilapia', 'c14': 'milk', 'c15': 'honey',
-  'c16': 'farm-tools', 'c17': 'npk-fertilizer', 'c18': 'maize-seeds',
-  'c19': 'golden-retriever', 'c20': 'yam', 'c21': 'cassava',
-  'c22': 'cow', '1': 'long-grain-rice', '2': 'beans', '3': 'maize', '4': 'tomatoes',
-};
-
-const allProducts: Record<string, Product> = {
-  'c1': { id: 'c1', name: 'Premium Long Grain Rice (25kg)', price: 15, image: img('long-grain-rice'), gallery: gallery('long-grain-rice'), category: 'Rice', description: 'High-quality long grain rice, aged to perfection for optimal flavor.', rating: 4.8, reviews: 124, stock: 50, unit: 'bag', origin: 'Northern Nigeria' },
-  'c2': { id: 'c2', name: 'Basmathi Rice (10kg)', price: 22, image: img('basmati-rice'), gallery: gallery('basmati-rice'), category: 'Rice', description: 'Premium basmati rice with aromatic fragrance and long grains.', rating: 4.9, reviews: 89, stock: 30, unit: 'bag', origin: 'Northern Nigeria' },
-  'c3': { id: 'c3', name: 'Brown Rice (5kg)', price: 12, image: img('brown-rice'), gallery: gallery('brown-rice'), category: 'Rice', description: 'Nutritious brown rice with bran layer intact. Rich in fiber.', rating: 4.7, reviews: 67, stock: 100, unit: 'bag', origin: 'Central Nigeria' },
-  'c4': { id: 'c4', name: 'Black Eyed Beans (2kg)', price: 8, image: img('black-eyed-beans'), gallery: gallery('black-eyed-beans'), category: 'Beans', description: 'Protein-rich black eyed beans, organically grown without pesticides.', rating: 4.9, reviews: 45, stock: 80, unit: 'kg', origin: 'Southern Nigeria' },
-  'c5': { id: 'c5', name: 'Yellow Maize (Corn) (10kg)', price: 18, image: img('maize'), gallery: gallery('maize'), category: 'Maize', description: 'Sweet yellow maize kernels, perfect for roasting, boiling, or grinding.', rating: 4.7, reviews: 67, stock: 100, unit: 'kg', origin: 'Central Nigeria' },
-  'c6': { id: 'c6', name: 'Fresh Tomatoes (5kg box)', price: 12, image: img('tomatoes'), gallery: gallery('tomatoes'), category: 'Vegetables', description: 'Ripe, juicy tomatoes perfect for salads and cooking.', rating: 4.8, reviews: 56, stock: 60, unit: 'box', origin: 'Plateau State' },
-  'c7': { id: 'c7', name: 'Organic Carrots (3kg)', price: 10, image: img('carrots'), gallery: gallery('carrots'), category: 'Vegetables', description: 'Sweet, crunchy organic carrots, rich in beta-carotene.', rating: 4.9, reviews: 78, stock: 120, unit: 'kg', origin: 'Jos, Nigeria' },
-  'c8': { id: 'c8', name: 'Red Bell Peppers (2kg)', price: 15, image: img('bell-peppers'), gallery: gallery('bell-peppers'), category: 'Vegetables', description: 'Vibrant red bell peppers, sweet and crisp.', rating: 4.8, reviews: 34, stock: 50, unit: 'kg', origin: 'Plateau State' },
-  'c9': { id: 'c9', name: 'Sweet Mangoes (10pcs)', price: 20, image: img('mangoes'), gallery: gallery('mangoes'), category: 'Fruits', description: 'Juicy ripe mangoes, perfect for smoothies and snacks.', rating: 4.9, reviews: 90, stock: 200, unit: 'pack', origin: 'Benue State' },
-  'c10': { id: 'c10', name: 'Fresh Pineapples (5pcs)', price: 18, image: img('pineapples'), gallery: gallery('pineapples'), category: 'Fruits', description: 'Golden pineapples, rich in vitamin C and bromelain.', rating: 4.8, reviews: 43, stock: 80, unit: 'pack', origin: 'Cross River State' },
-  'c11': { id: 'c11', name: 'Live Goat (Medium)', price: 150, image: img('goat'), gallery: gallery('goat'), category: 'Livestock', description: 'Healthy live goat, suitable for breeding or meat.', rating: 4.7, reviews: 28, stock: 15, unit: 'head', origin: 'Kaduna State' },
-  'c12': { id: 'c12', name: 'Broiler Chicken (2kg)', price: 25, image: img('chicken'), gallery: gallery('chicken'), category: 'Poultry', description: 'Tender broiler chicken, raised without antibiotics.', rating: 4.8, reviews: 65, stock: 40, unit: 'bird', origin: 'Lagos State' },
-  'c13': { id: 'c13', name: 'Fresh Tilapia (5kg)', price: 35, image: img('tilapia'), gallery: gallery('tilapia'), category: 'Fishery', description: 'Freshwater tilapia, clean and firm texture.', rating: 4.9, reviews: 72, stock: 60, unit: 'kg', origin: 'Niger State' },
-  'c14': { id: 'c14', name: 'Fresh Cow Milk (10L)', price: 20, image: img('milk'), gallery: gallery('milk'), category: 'Dairy', description: 'Pure cow milk, rich in calcium and protein.', rating: 4.8, reviews: 55, stock: 30, unit: 'litre', origin: 'Kano State' },
-  'c15': { id: 'c15', name: 'Natural Honey (500ml)', price: 15, image: img('honey'), gallery: gallery('honey'), category: 'Honey', description: 'Pure natural honey, unfiltered and unpasteurized.', rating: 4.9, reviews: 110, stock: 80, unit: 'jar', origin: 'Plateau State' },
-  'c16': { id: 'c16', name: 'Hoe Tool Set (3pcs)', price: 45, image: img('farm-tools'), gallery: gallery('farm-tools'), category: 'Farm Tools', description: 'Durable hoe set for weeding and soil preparation.', rating: 4.7, reviews: 38, stock: 25, unit: 'set', origin: 'Made in Nigeria' },
-  'c17': { id: 'c17', name: 'NPK Fertilizer (25kg bag)', price: 60, image: img('npk-fertilizer'), gallery: gallery('npk-fertilizer'), category: 'Fertilizers', description: 'Balanced NPK fertilizer for optimal crop growth.', rating: 4.8, reviews: 44, stock: 100, unit: 'bag', origin: 'Nigeria' },
-  'c18': { id: 'c18', name: 'Maize Seeds (2kg)', price: 12, image: img('maize-seeds'), gallery: gallery('maize-seeds'), category: 'Seeds', description: 'High-yield maize seeds. 95% germination rate guaranteed.', rating: 4.7, reviews: 29, stock: 150, unit: 'pack', origin: 'IITA Certified' },
-  'c19': { id: 'c19', name: 'Golden Retriever Puppy', price: 200, image: img('golden-retriever'), gallery: gallery('golden-retriever'), category: 'Pets', description: 'Friendly golden retriever puppy, vaccinated and dewormed.', rating: 4.9, reviews: 22, stock: 5, unit: 'puppy', origin: 'Lagos State' },
-  '1': { id: '1', name: 'Premium Rice Bag (50kg)', price: 25, image: img('long-grain-rice'), gallery: gallery('long-grain-rice'), category: 'Rice', description: 'Premium quality long grain rice in a 50kg bag.', rating: 4.8, reviews: 124, stock: 50, unit: 'bag', origin: 'Northern Nigeria' },
-  '2': { id: '2', name: 'Fresh Organic Beans', price: 20, image: img('beans'), gallery: gallery('beans'), category: 'Beans', description: 'Nutrient-rich organic beans, grown without pesticides.', rating: 4.9, reviews: 89, stock: 30, unit: 'kg', origin: 'Southern Nigeria' },
-  '3': { id: '3', name: 'Yellow Maize (Corn)', price: 18, image: img('maize'), gallery: gallery('maize'), category: 'Maize', description: 'Sweet yellow maize kernels, perfect for roasting or grinding.', rating: 4.7, reviews: 67, stock: 100, unit: 'kg', origin: 'Central Nigeria' },
-  '4': { id: '4', name: 'Farm Fresh Tomatoes', price: 15, image: img('tomatoes'), gallery: gallery('tomatoes'), category: 'Vegetables', description: 'Farm-fresh tomatoes, ripe and full of flavor.', rating: 4.8, reviews: 56, stock: 60, unit: 'kg', origin: 'Plateau State' },
-};
 
 export function ProductDetails() {
   const { id } = useParams<{ id: string }>();
@@ -99,8 +15,7 @@ export function ProductDetails() {
   const { addItem, isInCart } = useCart();
   const { user } = useAuth();
 
-  const product = allProducts[id || ''];
-  const [mainImage, setMainImage] = useState(product?.image || '');
+  const product = id ? getProductById(id) : undefined;
   const [quantity, setQuantity] = useState(1);
   const [addedFeedback, setAddedFeedback] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'highlights' | 'shipping'>('description');
@@ -140,64 +55,47 @@ export function ProductDetails() {
       navigate('/login', { state: { from: { pathname: '/checkout' } } });
       return;
     }
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      category: product.category,
-      unit: product.unit,
-    });
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category, unit: product.unit });
     navigate('/checkout');
   };
 
-  const relatedProducts = Object.values(allProducts)
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const relatedProducts = getRelatedProducts(product, 4);
+
+  const mainCatBadge: Record<string, string> = {
+    food: 'bg-emerald-500/20 text-emerald-400',
+    tools: 'bg-amber-500/20 text-amber-400',
+    animals: 'bg-purple-500/20 text-purple-400',
+  };
 
   return (
     <div className="space-y-10 py-6">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-      >
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
         <ArrowLeft className="h-4 w-4" /> Back
       </button>
 
       <div className="flex flex-col lg:flex-row gap-10">
         <div className="w-full lg:w-1/2 space-y-4">
           <motion.div
-            key={mainImage}
+            key={product.image}
             initial={{ opacity: 0.7 }}
             animate={{ opacity: 1 }}
             className="relative h-80 md:h-96 rounded-2xl overflow-hidden glass-card border border-purple-500/10"
           >
-            <ProductImage
-              src={mainImage}
-              alt={product.name}
-              className="w-full h-full"
-              large
-            />
-            <div className="absolute top-3 right-3 bg-purple-600/90 text-white text-xs font-medium px-2.5 py-1 rounded-full">
-              {product.category}
+            <ProductImage src={product.image} alt={product.name} className="w-full h-full" large />
+            <div className="absolute top-3 right-3 flex gap-2">
+              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${mainCatBadge[product.mainCategory] ?? 'bg-purple-600/90 text-white'}`}>
+                {product.category}
+              </span>
             </div>
           </motion.div>
-          <div className="flex gap-3">
-            {product.gallery.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setMainImage(img)}
-                className={`w-20 h-20 rounded-xl overflow-hidden border-2 transition-all ${mainImage === img ? 'border-purple-500' : 'border-white/10 hover:border-purple-500/50'}`}
-              >
-                <ProductImage src={img} alt={product.name} className="w-full h-full" />
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="w-full lg:w-1/2 space-y-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
+              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${mainCatBadge[product.mainCategory] ?? 'bg-purple-600/20 text-purple-400'}`}>
+                {product.mainCategory.toUpperCase()}
+              </span>
               <span className="text-xs bg-purple-600/20 text-purple-400 px-2.5 py-1 rounded-full">{product.category}</span>
               {product.stock > 0 && (
                 <span className="text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -209,13 +107,13 @@ export function ProductDetails() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-4xl font-bold text-purple-400">{product.price}π</div>
+            <div className="text-4xl font-bold text-purple-400">{product.price}{'\u03c0'}</div>
             <div className="text-gray-400 text-sm">/ {product.unit}</div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="flex">
-              {[1,2,3,4,5].map(s => (
+              {[1, 2, 3, 4, 5].map(s => (
                 <Star key={s} className={`h-4 w-4 ${s <= Math.round(product.rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-600'}`} />
               ))}
             </div>
@@ -240,13 +138,11 @@ export function ProductDetails() {
               <span className="px-6 py-3 text-white font-medium">{quantity}</span>
               <button onClick={() => setQuantity(q => Math.min(product.stock, q + 1))} className="px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 transition-colors text-lg font-bold">+</button>
             </div>
-            <span className="text-gray-500 text-sm">× {product.price}π = <span className="text-purple-400 font-bold">{(quantity * product.price).toFixed(0)}π</span></span>
+            <span className="text-gray-500 text-sm">\u00d7 {product.price}{'\u03c0'} = <span className="text-purple-400 font-bold">{(quantity * product.price).toFixed(0)}{'\u03c0'}</span></span>
           </div>
 
           <div className="flex gap-3">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={handleAddToCart}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={handleAddToCart}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 isInCart(product.id)
                   ? 'bg-green-600/20 border border-green-500/50 text-green-400'
@@ -265,9 +161,7 @@ export function ProductDetails() {
                 )}
               </AnimatePresence>
             </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={handleBuyNow}
+            <motion.button whileTap={{ scale: 0.97 }} onClick={handleBuyNow}
               className="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3.5 px-6 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple-500/25"
             >
               Buy Now
@@ -279,9 +173,7 @@ export function ProductDetails() {
       <div className="glass-card rounded-2xl border border-white/5 overflow-hidden">
         <div className="flex border-b border-white/5">
           {(['description', 'highlights', 'shipping'] as const).map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
+            <button key={tab} onClick={() => setActiveTab(tab)}
               className={`flex-1 py-4 text-sm font-medium capitalize transition-all ${activeTab === tab ? 'text-purple-400 border-b-2 border-purple-500' : 'text-gray-400 hover:text-white'}`}
             >
               {tab === 'highlights' ? 'Product Highlights' : tab === 'shipping' ? 'Shipping & Storage' : 'Description'}
@@ -292,7 +184,7 @@ export function ProductDetails() {
           {activeTab === 'description' && (
             <p className="text-gray-300 leading-relaxed">
               Our {product.name.toLowerCase()} undergoes rigorous quality checks to ensure you receive only the best.
-              From farm to table, we maintain strict hygiene standards and optimal storage conditions to preserve freshness and nutritional value.
+              From farm to table we maintain strict hygiene standards and optimal storage conditions to preserve freshness and nutritional value.
               Each {product.unit} is carefully measured and packaged to protect against moisture and contaminants.
             </p>
           )}
@@ -307,8 +199,8 @@ export function ProductDetails() {
           )}
           {activeTab === 'shipping' && (
             <div className="space-y-3 text-gray-300">
-              <p>Store in a cool, dry place away from direct sunlight. Once opened, transfer to an airtight container to maintain freshness.</p>
-              <p>Delivery available nationwide. Orders are processed within 24 hours and delivered in 2–5 business days.</p>
+              <p>Store in a cool dry place away from direct sunlight. Once opened transfer to an airtight container to maintain freshness.</p>
+              <p>Delivery available nationwide. Orders are processed within 24 hours and delivered in 2-5 business days.</p>
             </div>
           )}
         </div>
