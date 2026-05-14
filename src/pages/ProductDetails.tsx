@@ -43,6 +43,7 @@ export function ProductDetails() {
       name: product.name,
       price: product.price,
       image: product.image,
+      mainCategory: product.mainCategory,
       category: product.category,
       unit: product.unit,
     });
@@ -55,7 +56,7 @@ export function ProductDetails() {
       navigate('/login', { state: { from: { pathname: '/checkout' } } });
       return;
     }
-    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category, unit: product.unit });
+    addItem({ id: product.id, name: product.name, price: product.price, image: product.image, mainCategory: product.mainCategory, category: product.category, unit: product.unit });
     navigate('/checkout');
   };
 
@@ -81,7 +82,7 @@ export function ProductDetails() {
             animate={{ opacity: 1 }}
             className="relative h-80 md:h-96 rounded-2xl overflow-hidden glass-card border border-purple-500/10"
           >
-            <ProductImage src={product.image} alt={product.name} className="w-full h-full" large />
+            <ProductImage src={product.image} alt={product.name} productId={product.id} productName={product.name} category={product.mainCategory} className="w-full h-full" large />
             <div className="absolute top-3 right-3 flex gap-2">
               <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${mainCatBadge[product.mainCategory] ?? 'bg-purple-600/90 text-white'}`}>
                 {product.category}

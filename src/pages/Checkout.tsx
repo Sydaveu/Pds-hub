@@ -272,7 +272,7 @@ export function Checkout() {
               <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                 {items.map(item => (
                   <div key={item.id} className="flex gap-3">
-                    <ProductImage src={item.image} alt={item.name} className="w-12 h-12 rounded-lg flex-shrink-0" />
+                    <ProductImage src={item.image} alt={item.name} productId={item.id} productName={item.name} category={item.mainCategory || item.category} className="w-12 h-12 rounded-lg flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium line-clamp-1">{item.name}</p>
                       <p className="text-gray-500 text-xs">{item.quantity} × {item.price}π</p>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getProductImage, getProductImageByKeyword, getFallbackImage } from '../../lib/productImages';
+import { getRealProductImageUrl, getFallbackImage } from '../../lib/imageService';
 
 export function ProductImage({
   src,
@@ -10,6 +10,9 @@ export function ProductImage({
   imgClassName = '',
   contain = false,
   maxHeight = '160px',
+  productId,
+  productName,
+  category,
 }: {
   src: string;
   alt: string;
@@ -18,21 +21,41 @@ export function ProductImage({
   imgClassName?: string;
   contain?: boolean;
   maxHeight?: string;
+  productId?: string;
+  productName?: string;
+  category?: string;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [isLoadingApi, setIsLoadingApi] = useState(!!(productId && productName));
 
-const handleError = () => {
-  if (!fallbackSrc) {
-    const kw = alt.toLowerCase().split(' ').slice(0, 2).join('-');
-    setFallbackSrc(getProductImageByKeyword(kw));
-  } else {
-    setError(true);
-  }
-};
+  useEffect(() => {
+    if (productId && productName) {
+      setIsLoadingApi(true);
+      getRealProductImageUrl(productId, productName, category || '')
+        .then((url) => {
+          if (url) setCurrentSrc(url);
+        })
+        .catch(() => {})
+        .finally(() => setIsLoadingApi(false));
+    }
+  }, [productId, productName, category]);
 
-  const displaySrc = error ? getFallbackImage() : (fallbackSrc || src);
+  const handleError = () => {
+    if (productId && productName && !isLoadingApi) {
+      getRealProductImageUrl(productId, productName, category || '')
+        .then((url) => {
+          if (url && url !== currentSrc) setCurrentSrc(url);
+          else setError(true);
+        })
+        .catch(() => setError(true));
+    } else {
+      setError(true);
+    }
+  };
+
+  const displaySrc = error ? getFallbackImage() : currentSrc;
 
   return (
     <div

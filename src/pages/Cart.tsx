@@ -57,7 +57,7 @@ export function Cart() {
               >
                 <div className="flex gap-5">
                   <div className="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden">
-                    <ProductImage src={item.image} alt={item.name} className="w-full h-full" />
+                    <ProductImage src={item.image} alt={item.name} productId={item.id} productName={item.name} category={item.mainCategory || item.category} className="w-full h-full" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">

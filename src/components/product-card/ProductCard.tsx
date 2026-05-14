@@ -9,6 +9,7 @@ interface Product {
   name: string;
   price: number;
   image: string;
+  mainCategory: string;
   category: string;
   rating: number;
   unit?: string;
@@ -31,6 +32,7 @@ export function ProductCard({
       name: product.name,
       price: product.price,
       image: product.image,
+      mainCategory: product.mainCategory,
       category: product.category,
       unit: product.unit || 'unit',
     });
@@ -44,7 +46,7 @@ export function ProductCard({
       className={`group glass-card rounded-2xl border border-white/5 overflow-hidden hover:border-purple-500/30 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 ${className ?? ''}`}
     >
       <div className="relative h-48 overflow-hidden">
-        <ProductImage src={product.image} alt={product.name} className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
+        <ProductImage src={product.image} alt={product.name} productId={product.id} productName={product.name} category={product.mainCategory} className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         <div className="absolute top-2 left-2 bg-purple-600/90 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
           {product.category}

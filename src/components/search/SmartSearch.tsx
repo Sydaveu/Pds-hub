@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { searchProducts, getAutocompleteSuggestions, type SearchResult } from '../../lib/searchUtils';
-import { getProductImageByKeyword } from '../../lib/productImages';
+import { ProductImage } from '../../components/ui/ProductImage';
 
 interface SmartSearchProps {
   onSearchChange: (value: string) => void;
@@ -189,15 +189,14 @@ export function SmartSearch({ onSearchChange, placeholder, autoFocus, onProductS
                   onClick={() => handleSelect(result)}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${selectedIndex === i ? 'bg-purple-600/20 text-white' : 'text-gray-300 hover:bg-white/5'}`}
                 >
-                  <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                    <img
-                      src={getProductImageByKeyword(result.product.name.split(' ').slice(0, 2).join('-'))}
-                      alt={result.product.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => { (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>'; }}
-                    />
-                  </div>
+                  <ProductImage
+                    src=""
+                    alt={result.product.name}
+                    productId={result.product.id}
+                    productName={result.product.name}
+                    category={result.product.mainCategory}
+                    className="w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0"
+                  />
                   <div className="flex-1 text-left min-w-0">
                     <p className="font-medium text-white truncate">{result.product.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
