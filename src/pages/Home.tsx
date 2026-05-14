@@ -3,17 +3,17 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ShoppingBag, Users, Package, Clock } from 'lucide-react';
 import { ProductCard } from '../components/product-card/ProductCard';
 import { getFeaturedProducts, mainCategories, allProducts } from '../lib/productData';
-import { getProductImageLarge } from '../lib/productImages';
+import { getProductImageLarge, getProductImageLargeByKeyword } from '../lib/productImages';
 
 const featuredProducts = getFeaturedProducts();
 
-const categoryHighlights = mainCategories.map(mc => {
-  const first = allProducts.find(p => p.mainCategory === mc.id);
-  return {
-    ...mc,
-    image: first ? getProductImageLarge(first.name.split(' ').slice(0, 2).join('-')) : '',
-  };
-});
+   const categoryHighlights = mainCategories.map(mc => {
+   const first = allProducts.find(p => p.mainCategory === mc.id);
+   return {
+     ...mc,
+     image: first ? getProductImageLargeByKeyword(first.name.split(' ').slice(0, 2).join('-')) : '',
+   };
+ });
 
 const stats = [
   { value: '10K+', label: 'Trusted Farmers', icon: Users, color: 'from-purple-600 to-purple-800' },

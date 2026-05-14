@@ -187,7 +187,7 @@ export function Marketplace() {
                 <Link to={`/product-details/${product.id}`} className="glass-card rounded-2xl border border-white/5 p-4 flex gap-4 items-center hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300 group">
                   <div className="w-16 h-16 rounded-xl overflow-hidden bg-white/5 flex-shrink-0">
                     <img
-                      src={getProductImage(product.name.split(' ').slice(0, 2).join('-'))}
+                       src={getProductImage(product.id, product.name.split(' ').slice(0, 2).join('-'))}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"

@@ -24,34 +24,16 @@ interface Order {
 const mockOrders: Order[] = [
   {
     id: 'PDS-7890', date: 'June 12, 2024', status: 'delivered', total: 30,
-    items: [{ id: 'f001', name: 'Premium Long Grain Rice (25kg)', price: 15, quantity: 2, image: getProductImage('rice') }],
-    shippingAddress: { fullName: 'John Doe', address: '123 Farm Road', city: 'Abuja', state: 'FCT', zipCode: '900001', country: 'Nigeria' },
-    trackingNumber: 'PDS-TRACK-7890-NG'
-  },
-  {
-    id: 'PDS-7889', date: 'June 10, 2024', status: 'processing', total: 45,
-    items: [
-      { id: 'f011', name: 'Red Kidney Beans (2kg)', price: 9, quantity: 2, image: getProductImage('kidney-beans') },
-      { id: 'f030', name: 'Yellow Maize (10kg)', price: 18, quantity: 1, image: getProductImage('maize') },
-      { id: 't001', name: 'Stainless Cutlass', price: 15, quantity: 1, image: getProductImage('cutlass') }
-    ],
-    shippingAddress: { fullName: 'John Doe', address: '123 Farm Road', city: 'Abuja', state: 'FCT', zipCode: '900001', country: 'Nigeria' }
-  },
-  {
-    id: 'PDS-7888', date: 'June 8, 2024', status: 'delivered', total: 22,
-    items: [
-      { id: 'f043', name: 'Fresh Tomatoes (5kg box)', price: 12, quantity: 1, image: getProductImage('tomatoes') },
-      { id: 'f044', name: 'Organic Carrots (3kg)', price: 10, quantity: 1, image: getProductImage('carrots') }
-    ],
-    shippingAddress: { fullName: 'John Doe', address: '123 Farm Road', city: 'Abuja', state: 'FCT', zipCode: '900001', country: 'Nigeria' },
-    trackingNumber: 'PDS-TRACK-7888-NG'
-  },
-  {
-    id: 'PDS-7887', date: 'June 5, 2024', status: 'delivered', total: 50,
-    items: [
-      { id: 'a060', name: 'Mature Cow (White Fulani)', price: 300, quantity: 1, image: getProductImage('cow') },
-      { id: 'a063', name: 'Red Sokoto Goat', price: 80, quantity: 1, image: getProductImage('goat') }
-    ],
+     items: [
+       { id: 'f001', name: 'Premium Long Grain Rice (25kg)', price: 15, quantity: 2, image: getProductImage('f001', 'rice') },
+       { id: 'f011', name: 'Red Kidney Beans (2kg)', price: 9, quantity: 2, image: getProductImage('f011', 'kidney-beans') },
+       { id: 'f030', name: 'Yellow Maize (10kg)', price: 18, quantity: 1, image: getProductImage('f030', 'maize') },
+       { id: 't001', name: 'Stainless Cutlass', price: 15, quantity: 1, image: getProductImage('t001', 'cutlass') },
+       { id: 'f043', name: 'Fresh Tomatoes (5kg box)', price: 12, quantity: 1, image: getProductImage('f043', 'tomatoes') },
+       { id: 'f044', name: 'Organic Carrots (3kg)', price: 10, quantity: 1, image: getProductImage('f044', 'carrots') },
+       { id: 'a060', name: 'Mature Cow (White Fulani)', price: 300, quantity: 1, image: getProductImage('a060', 'cow') },
+       { id: 'a063', name: 'Red Sokoto Goat', price: 80, quantity: 1, image: getProductImage('a063', 'goat') }
+     ],
     shippingAddress: { fullName: 'John Doe', address: '123 Farm Road', city: 'Abuja', state: 'FCT', zipCode: '900001', country: 'Nigeria' },
     trackingNumber: 'PDS-TRACK-7887-NG'
   },

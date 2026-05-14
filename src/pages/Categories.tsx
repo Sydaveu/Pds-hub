@@ -132,7 +132,7 @@ export function Categories() {
                       {products.slice(0, 3).map(p => (
                         <img
                           key={p.id}
-                          src={getProductImage(p.name.split(' ').slice(0, 2).join('-'))}
+                          src={getProductImage(p.id, p.name.split(' ').slice(0, 2).join('-'))}
                           alt=""
                           className="w-8 h-8 rounded-lg object-cover"
                           loading="lazy"

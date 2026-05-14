@@ -19,7 +19,7 @@ export interface Product {
 import { getProductImage } from './productImages';
 
 const PI = '\u03c0';
-const IMG = (kw: string) => getProductImage(kw);
+const IMG = (id: string, kw: string) => getProductImage(id, kw);
 
 export const allProducts: Product[] = [
   // ═══════════════════════════════════════════
@@ -27,8 +27,8 @@ export const allProducts: Product[] = [
   // ═══════════════════════════════════════════
   ...(function(): Product[] {
     const f = (id: string, name: string, price: number, category: string, sub: string, desc: string, rating: number, reviews: number, stock: number, unit: string, origin: string, imgKw: string, featured = false, tags?: string[]): Product => ({
-      id, name, price, mainCategory: 'food', category, subcategory: sub,
-      image: IMG(imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
+       id, name, price, mainCategory: 'food', category, subcategory: sub,
+       image: IMG(id, imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
       searchTags: tags ?? [category.toLowerCase(), sub.toLowerCase(), ...name.toLowerCase().split(' ')]
     });
     const r = [
@@ -263,8 +263,8 @@ export const allProducts: Product[] = [
   // ═══════════════════════════════════════════
   ...(function(): Product[] {
     const f = (id: string, name: string, price: number, category: string, sub: string, desc: string, rating: number, reviews: number, stock: number, unit: string, origin: string, imgKw: string, featured = false): Product => ({
-      id, name, price, mainCategory: 'tools', category, subcategory: sub,
-      image: IMG(imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
+       id, name, price, mainCategory: 'tools', category, subcategory: sub,
+       image: IMG(id, imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
       searchTags: [category.toLowerCase(), sub.toLowerCase(), ...name.toLowerCase().split(' ')]
     });
     return [
@@ -319,8 +319,8 @@ export const allProducts: Product[] = [
   // ═══════════════════════════════════════════
   ...(function(): Product[] {
     const f = (id: string, name: string, price: number, category: string, sub: string, desc: string, rating: number, reviews: number, stock: number, unit: string, origin: string, imgKw: string, featured = false): Product => ({
-      id, name, price, mainCategory: 'animals', category, subcategory: sub,
-      image: IMG(imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
+       id, name, price, mainCategory: 'animals', category, subcategory: sub,
+       image: IMG(id, imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
       searchTags: [category.toLowerCase(), sub.toLowerCase(), ...name.toLowerCase().split(' ')]
     });
     return [

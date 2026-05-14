@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Send, Bot, ArrowLeft, RefreshCw, Sparkles, ExternalLink, Trash2, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateGeminiResponse, isGeminiConfigured } from '../lib/gemini';
-import { getProductImage } from '../lib/productImages';
+import { getProductImageByKeyword } from '../lib/productImages';
 
 interface ChatMessage {
   id: string;
@@ -41,52 +41,52 @@ function loadContext(): ChatContext {
 
 const PRODUCT_IMAGES: Record<string, { url: string; caption: string }[]> = {
   rice: [
-    { url: getProductImage('long-grain-rice'), caption: 'Premium Long Grain Rice (25kg) \u2014 15\u03c0' },
-    { url: getProductImage('basmati-rice'), caption: 'Basmathi Rice (10kg) \u2014 8\u03c0' },
+     { url: getProductImageByKeyword('long-grain-rice'), caption: 'Premium Long Grain Rice (25kg) \u2014 15\u03c0' },
+     { url: getProductImageByKeyword('basmati-rice'), caption: 'Basmathi Rice (10kg) \u2014 8\u03c0' },
   ],
   beans: [
-    { url: getProductImage('black-eyed-beans'), caption: 'Black Eyed Beans (2kg) \u2014 5\u03c0' },
-    { url: getProductImage('kidney-beans'), caption: 'Mixed Legumes Pack \u2014 7\u03c0' },
+    { url: getProductImageByKeyword('black-eyed-beans'), caption: 'Black Eyed Beans (2kg) \u2014 5\u03c0' },
+    { url: getProductImageByKeyword('kidney-beans'), caption: 'Mixed Legumes Pack \u2014 7\u03c0' },
   ],
   vegetables: [
-    { url: getProductImage('carrots'), caption: 'Fresh Organic Carrots (3kg) \u2014 6\u03c0' },
-    { url: getProductImage('tomatoes'), caption: 'Plum Tomatoes (2kg) \u2014 4\u03c0' },
-    { url: getProductImage('bell-peppers'), caption: 'Fresh Bell Peppers (1kg) \u2014 5\u03c0' },
+    { url: getProductImageByKeyword('carrots'), caption: 'Fresh Organic Carrots (3kg) \u2014 6\u03c0' },
+    { url: getProductImageByKeyword('tomatoes'), caption: 'Plum Tomatoes (2kg) \u2014 4\u03c0' },
+    { url: getProductImageByKeyword('bell-peppers'), caption: 'Fresh Bell Peppers (1kg) \u2014 5\u03c0' },
   ],
   fruits: [
-    { url: getProductImage('mangoes'), caption: 'Sweet Mangoes (10pcs) \u2014 12\u03c0' },
-    { url: getProductImage('pineapples'), caption: 'Fresh Pineapples (3pcs) \u2014 9\u03c0' },
+    { url: getProductImageByKeyword('mangoes'), caption: 'Sweet Mangoes (10pcs) \u2014 12\u03c0' },
+    { url: getProductImageByKeyword('pineapples'), caption: 'Fresh Pineapples (3pcs) \u2014 9\u03c0' },
   ],
   livestock: [
-    { url: getProductImage('goat'), caption: 'Healthy Goat (medium) \u2014 150\u03c0' },
-    { url: getProductImage('cow'), caption: 'Mature Bull \u2014 300\u03c0' },
+    { url: getProductImageByKeyword('goat'), caption: 'Healthy Goat (medium) \u2014 150\u03c0' },
+    { url: getProductImageByKeyword('cow'), caption: 'Mature Bull \u2014 300\u03c0' },
   ],
   poultry: [
-    { url: getProductImage('chicken'), caption: 'Live Broiler Chicken (2kg+) \u2014 12\u03c0' },
+    { url: getProductImageByKeyword('chicken'), caption: 'Live Broiler Chicken (2kg+) \u2014 12\u03c0' },
   ],
   fishery: [
-    { url: getProductImage('tilapia'), caption: 'Fresh Tilapia (5kg) \u2014 35\u03c0' },
-    { url: getProductImage('catfish'), caption: 'Live Catfish (3kg) \u2014 25\u03c0' },
+    { url: getProductImageByKeyword('tilapia'), caption: 'Fresh Tilapia (5kg) \u2014 35\u03c0' },
+    { url: getProductImageByKeyword('catfish'), caption: 'Live Catfish (3kg) \u2014 25\u03c0' },
   ],
   honey: [
-    { url: getProductImage('honey'), caption: 'Natural Wildflower Honey (500ml) \u2014 15\u03c0' },
+    { url: getProductImageByKeyword('honey'), caption: 'Natural Wildflower Honey (500ml) \u2014 15\u03c0' },
   ],
   dairy: [
-    { url: getProductImage('milk'), caption: 'Fresh Cow Milk (10L) \u2014 20\u03c0' },
+    { url: getProductImageByKeyword('milk'), caption: 'Fresh Cow Milk (10L) \u2014 20\u03c0' },
   ],
   seeds: [
-    { url: getProductImage('maize-seeds'), caption: 'Hybrid Maize Seeds (5kg) \u2014 15\u03c0' },
+    { url: getProductImageByKeyword('maize-seeds'), caption: 'Hybrid Maize Seeds (5kg) \u2014 15\u03c0' },
   ],
   tools: [
-    { url: getProductImage('farm-tools'), caption: 'Premium Garden Hoe \u2014 8\u03c0' },
+    { url: getProductImageByKeyword('farm-tools'), caption: 'Premium Garden Hoe \u2014 8\u03c0' },
   ],
   maize: [
-    { url: getProductImage('maize'), caption: 'Yellow Maize (50kg bag) \u2014 18\u03c0' },
-    { url: getProductImage('corn-cob'), caption: 'Fresh Corn on the Cob (10pcs) \u2014 12\u03c0' },
+    { url: getProductImageByKeyword('maize'), caption: 'Yellow Maize (50kg bag) \u2014 18\u03c0' },
+    { url: getProductImageByKeyword('corn-cob'), caption: 'Fresh Corn on the Cob (10pcs) \u2014 12\u03c0' },
   ],
-  yam: [
-    { url: getProductImage('yam'), caption: 'Fresh Yam Tubers (per piece) \u2014 8\u03c0' },
-  ],
+   yam: [
+     { url: getProductImageByKeyword('yam'), caption: 'Fresh Yam Tubers (per piece) \u2014 8\u03c0' },
+   ],
 };
 
 const NAMES: Record<string, string> = {

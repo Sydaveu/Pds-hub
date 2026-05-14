@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { searchProducts, getAutocompleteSuggestions, type SearchResult } from '../../lib/searchUtils';
-import { getProductImage } from '../../lib/productImages';
+import { getProductImageByKeyword } from '../../lib/productImages';
 
 interface SmartSearchProps {
   onSearchChange: (value: string) => void;
@@ -191,7 +191,7 @@ export function SmartSearch({ onSearchChange, placeholder, autoFocus, onProductS
                 >
                   <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
                     <img
-                      src={getProductImage(result.product.name.split(' ').slice(0, 2).join('-'))}
+                      src={getProductImageByKeyword(result.product.name.split(' ').slice(0, 2).join('-'))}
                       alt={result.product.name}
                       className="w-full h-full object-cover"
                       loading="lazy"

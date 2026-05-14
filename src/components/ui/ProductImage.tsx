@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getProductImage, getFallbackImage } from '../../lib/productImages';
+import { getProductImage, getProductImageByKeyword, getFallbackImage } from '../../lib/productImages';
 
 export function ProductImage({
   src,
@@ -23,14 +23,14 @@ export function ProductImage({
   const [error, setError] = useState(false);
   const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
 
-  const handleError = () => {
-    if (!fallbackSrc) {
-      const kw = alt.toLowerCase().split(' ').slice(0, 2).join('-');
-      setFallbackSrc(getProductImage(kw));
-    } else {
-      setError(true);
-    }
-  };
+const handleError = () => {
+  if (!fallbackSrc) {
+    const kw = alt.toLowerCase().split(' ').slice(0, 2).join('-');
+    setFallbackSrc(getProductImageByKeyword(kw));
+  } else {
+    setError(true);
+  }
+};
 
   const displaySrc = error ? getFallbackImage() : (fallbackSrc || src);
 
