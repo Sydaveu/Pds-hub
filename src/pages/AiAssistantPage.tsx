@@ -42,7 +42,7 @@ function loadContext(): ChatContext {
 const PRODUCT_IMAGES: Record<string, { url: string; caption: string }[]> = {
   rice: [
      { url: getProductImageByKeyword('long-grain-rice'), caption: 'Premium Long Grain Rice (25kg) \u2014 15\u03c0' },
-     { url: getProductImageByKeyword('basmati-rice'), caption: 'Basmathi Rice (10kg) \u2014 8\u03c0' },
+     { url: getProductImageByKeyword('basmati-rice'), caption: 'Basmati Rice (10kg) \u2014 8\u03c0' },
   ],
   beans: [
     { url: getProductImageByKeyword('black-eyed-beans'), caption: 'Black Eyed Beans (2kg) \u2014 5\u03c0' },
@@ -104,7 +104,7 @@ const PAGES: Record<string, string> = {
 
 const CATEGORY_ALIASES: Record<string, string[]> = {
   rice: ['rice', 'basmati', 'jollof'],
-  beans: ['beans', 'beans', 'ewa', 'legume'],
+  beans: ['beans', 'ewa', 'legume'],
   maize: ['maize', 'corn', 'maize'],
   yam: ['yam', 'elubo'],
   vegetables: ['vegetable', 'tomato', 'carrot', 'onion', 'pepper', 'ugu', 'spinach'],
@@ -383,7 +383,7 @@ function generateResponse(intent: string, category: string | null, ctx: ChatCont
         `\uD83C\uDF1F This is the energy I love. ${name} in the building and we're about to make moves. What's good?`,
         `Ayy there we go \uD83D\uDE0E SY-DAVET online and ready. You know the vibes — fresh products, Pi payments, good conversation.`,
         `I'm vibing ${name}! \uD83D\uDE0C Whether it's products, Pi talk, or just shooting the breeze — I'm here for it all.`,
-        `Respect \uD83D\uDC4A You're talking to the AI that knows 16 categories, 22+ products, and all things Pi. Ask me anything!`,
+        `Respect \uD83D\uDC4A You're talking to the AI that knows 16 categories, 231+ products, and all things Pi. Ask me anything!`,
         `This is my favorite kind of conversation \uD83D\uDE0E Just ${name} and SY-DAVET shooting the breeze. What's on your mind?`,
       ];
       return { text: pick(chatty), smartReplies: shuffleArr(freshReplies).slice(0, 4) };

@@ -46,7 +46,7 @@ export function Home() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">Powered by Pi</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Discover fresh quality agricultural products from trusted farmers. Buy with Pi cryptocurrency \u2014 fast secure and borderless.
+              Discover fresh quality agricultural products from trusted farmers. Buy with Pi cryptocurrency \u2014 fast, secure, and borderless.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/marketplace" className="group flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/30">
@@ -103,7 +103,7 @@ export function Home() {
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid md:grid-cols-3 gap-8">
           {[
             { step: '01', icon: '🔍', title: 'Browse & Select', desc: 'Explore our marketplace and find exactly what you need from trusted farmers.' },
-            { step: '02', icon: '🥧', title: 'Buy with Pi', desc: 'Secure checkout using Pi Network cryptocurrency \u2014 fast low-fee and borderless.' },
+            { step: '02', icon: '🥧', title: 'Buy with Pi', desc: 'Secure checkout using Pi Network cryptocurrency \u2014 fast, low-fee, and borderless.' },
             { step: '03', icon: '📦', title: 'Get Delivered', desc: 'Your products are carefully packaged and delivered fresh to your doorstep.' },
           ].map(({ step, icon, title, desc }) => (
             <motion.div key={step} variants={item} className="glass-card rounded-2xl border border-white/5 p-8 text-center hover:border-purple-500/20 transition-all">

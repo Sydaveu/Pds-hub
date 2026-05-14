@@ -1,43 +1,29 @@
-// Use Picsum.photos for all images - provides real photographs that are:
-// 1. Permanent: same seed + size = same image forever
-// 2. Unique: different seeds = different images
-// 3. Real: actual photographs, not illustrations or AI-generated
-// 4. Free: no API keys required, no rate limits for reasonable usage
-const PICSUM_BASE = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}`;
+const PLACEHOLDER_SVG = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1a1a2e"/><text x="200" y="140" text-anchor="middle" fill="rgba(168,85,247,0.4)" font-size="48">🌾</text><text x="200" y="190" text-anchor="middle" fill="rgba(168,85,247,0.25)" font-size="14" font-family="sans-serif">Product Image</text></svg>'
+);
 
-const FALLBACK_SEED = 'fallback'; // Permanent fallback image
+const PLACEHOLDER_LG = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#1a1a2e"/><text x="400" y="280" text-anchor="middle" fill="rgba(168,85,247,0.4)" font-size="72">🌾</text><text x="400" y="360" text-anchor="middle" fill="rgba(168,85,247,0.25)" font-size="18" font-family="sans-serif">Product Image</text></svg>'
+);
+
+const FALLBACK = PLACEHOLDER_SVG;
 
 export function getProductImage(productId: string, keyword: string): string {
-  const clean = keyword.toLowerCase().trim().replace(/\s+/g, '-');
-  // Create unique seed combining product ID and keyword
-  // This ensures:
-  // 1. Same product/keyword = same image (permanent)
-  // 2. Different products = different images (unique)
-  // 3. Same keyword in different products = different images (no cross-contamination)
-  const seed = `${productId}-${clean}`;
-  return `${PICSUM_BASE(seed)}/400/300`;
+  return PLACEHOLDER_SVG;
 }
 
 export function getProductImageLarge(productId: string, keyword: string): string {
-  const clean = keyword.toLowerCase().trim().replace(/\s+/g, '-');
-  const seed = `${productId}-${clean}`;
-  return `${PICSUM_BASE(seed)}/800/600`;
+  return PLACEHOLDER_LG;
 }
 
-// Overload for backward compatibility - used in search, thumbs, fallbacks where we don't have product ID
 export function getProductImageByKeyword(keyword: string): string {
-  const clean = keyword.toLowerCase().trim().replace(/\s+/g, '-');
-  // Use hash of keyword to ensure consistency, but add namespace to avoid collisions
-  const seed = `keyword-${clean}`;
-  return `${PICSUM_BASE(seed)}/400/300`;
+  return PLACEHOLDER_SVG;
 }
 
 export function getProductImageLargeByKeyword(keyword: string): string {
-  const clean = keyword.toLowerCase().trim().replace(/\s+/g, '-');
-  const seed = `keyword-${clean}`;
-  return `${PICSUM_BASE(seed)}/800/600`;
+  return PLACEHOLDER_LG;
 }
 
 export function getFallbackImage(): string {
-  return `${PICSUM_BASE(FALLBACK_SEED)}/400/300`;
+  return FALLBACK;
 }

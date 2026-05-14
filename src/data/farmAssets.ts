@@ -10,8 +10,18 @@ export interface FarmAsset {
   keywords: string[];
 }
 
-const PICSUM = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/400/300`;
-const PICSUM_LG = (seed: string) => `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`;
+const CAT_PLACEHOLDER = {
+  food: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1a1a2e"/><text x="200" y="150" text-anchor="middle" fill="rgba(16,185,129,0.3)" font-size="64">🌾</text></svg>'),
+  animal: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1a1a2e"/><text x="200" y="150" text-anchor="middle" fill="rgba(168,85,247,0.3)" font-size="64">🐾</text></svg>'),
+  tool: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1a1a2e"/><text x="200" y="150" text-anchor="middle" fill="rgba(245,158,11,0.3)" font-size="64">🔧</text></svg>'),
+  utility: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1a1a2e"/><text x="200" y="150" text-anchor="middle" fill="rgba(59,130,246,0.3)" font-size="64">⚡</text></svg>'),
+};
+const CAT_PLACEHOLDER_LG = {
+  food: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#1a1a2e"/><text x="400" y="300" text-anchor="middle" fill="rgba(16,185,129,0.3)" font-size="96">🌾</text></svg>'),
+  animal: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#1a1a2e"/><text x="400" y="300" text-anchor="middle" fill="rgba(168,85,247,0.3)" font-size="96">🐾</text></svg>'),
+  tool: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#1a1a2e"/><text x="400" y="300" text-anchor="middle" fill="rgba(245,158,11,0.3)" font-size="96">🔧</text></svg>'),
+  utility: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#1a1a2e"/><text x="400" y="300" text-anchor="middle" fill="rgba(59,130,246,0.3)" font-size="96">⚡</text></svg>'),
+};
 const LOCAL = (era: string, file: string) => `/assets/${era}/${file}`;
 
 export const farmAssets: FarmAsset[] = [
@@ -421,11 +431,11 @@ export const assetCategories = [
 ] as const;
 
 export function getAssetImageUrl(asset: FarmAsset): string {
-  return PICSUM(asset.id + '-' + asset.alt);
+  return CAT_PLACEHOLDER[asset.category] ?? CAT_PLACEHOLDER.food;
 }
 
 export function getAssetImageLarge(asset: FarmAsset): string {
-  return PICSUM_LG(asset.id + '-' + asset.alt);
+  return CAT_PLACEHOLDER_LG[asset.category] ?? CAT_PLACEHOLDER_LG.food;
 }
 
 export function searchFarmAssets(query: string, maxResults = 8): FarmAsset[] {

@@ -614,3 +614,23 @@ npm run build  # Production build to dist/
   - ✅ No more concerns about image renewal or changing
   - ✅ System is ready for comprehensive user testing
   - ✅ Application running successfully at http://127.0.0.1:5000/
+
+## Session 18 — 14 May 2026 (REMOVE PICSUM COMPLETELY)
+- **Task:** Remove ALL Picsum.photos references from the codebase
+- **Why:** Picsum served random photos (buildings, people, nature) unrelated to products. Seeds like "f001-rice" had no semantic meaning.
+- **What changed:**
+  - **`src/lib/imageService.ts`** — Removed `getPermanentFallbackImage()` (returned Picsum URL). Replaced with `STATIC_PLACEHOLDER` SVG data URI (dark bg + 🌾 icon + "Product Image" text). Fallback chain: Pexels → Pixabay → Unsplash → Static SVG.
+  - **`src/lib/productImages.ts`** — Complete rewrite. All 5 functions (`getProductImage`, `getProductImageLarge`, `getProductImageByKeyword`, `getProductImageLargeByKeyword`, `getFallbackImage`) now return color-matched inline SVG data URIs instead of Picsum URLs. This file is a legacy backward-compat layer.
+  - **`src/data/farmAssets.ts`** — Removed PICSUM/PICSUM_LG helper functions. `getAssetImageUrl()` and `getAssetImageLarge()` now return category-colored inline SVG data URIs (🌾=food, 🐾=animal, 🔧=tool, ⚡=utility) as placeholders. FarmAssets page already had onError → emoji fallback which still works.
+- **Result:**
+  - ✅ Zero Picsum references remain in `src/` (verified via grep)
+  - ✅ All images go through real API chain: Pexels → Pixabay → Unsplash → Static SVG placeholder
+  - ✅ Build: 0 errors (6.13s)
+- **IMPORTANT: API keys are in .env which is gitignored!**
+  - For Vercel deployment to work, add these env vars in Vercel Dashboard → Settings → Environment Variables:
+    - `VITE_PEXELS_API_KEY=JRp9FpqBLnuWqDGoGH4w17yhE5uw3wL0K9DMj5TioTsMBfnQJ24TDpn6`
+    - `VITE_PIXABAY_API_KEY=55857324-901f334955dfecfab89891b55`
+    - `VITE_UNSPLASH_API_KEY=oM88hYVbWUKIvCS_2w2vmb3jsOSq07bj71JEoGwPS7I`
+    - `VITE_GEMINI_API_KEY=(your Gemini key)`
+  - Without these, ALL API calls silently return null and ALL images show the static SVG placeholder.
+- **Next Step:** User must configure Vercel env vars manually, then trigger re-deploy.

@@ -185,7 +185,7 @@ export function ProductDetails() {
           {activeTab === 'description' && (
             <p className="text-gray-300 leading-relaxed">
               Our {product.name.toLowerCase()} undergoes rigorous quality checks to ensure you receive only the best.
-              From farm to table we maintain strict hygiene standards and optimal storage conditions to preserve freshness and nutritional value.
+              From farm to table, we maintain strict hygiene standards and optimal storage conditions to preserve freshness and nutritional value.
               Each {product.unit} is carefully measured and packaged to protect against moisture and contaminants.
             </p>
           )}
@@ -200,7 +200,7 @@ export function ProductDetails() {
           )}
           {activeTab === 'shipping' && (
             <div className="space-y-3 text-gray-300">
-              <p>Store in a cool dry place away from direct sunlight. Once opened transfer to an airtight container to maintain freshness.</p>
+              <p>Store in a cool, dry place away from direct sunlight. Once opened, transfer to an airtight container to maintain freshness.</p>
               <p>Delivery available nationwide. Orders are processed within 24 hours and delivered in 2-5 business days.</p>
             </div>
           )}

@@ -222,7 +222,7 @@ export const allProducts: Product[] = [
       f('f141', `Vanilla Ice Cream (1L)`, 8, 'Dairy', 'Dairy', 'Rich vanilla ice cream', 4.6, 45, 60, 'litre', 'Nigeria', 'ice-cream'),
 
       // Honey
-      f('f142', `Natural Honey (500ml)`, 15, 'Honey', 'Honey', 'Pure natural honey unfiltered and unpasteurized', 4.9, 110, 80, 'jar', 'Plateau State', 'honey', true),
+      f('f142', `Natural Honey (500ml)`, 15, 'Honey', 'Honey', 'Pure natural honey, unfiltered and unpasteurized', 4.9, 110, 80, 'jar', 'Plateau State', 'honey', true),
       f('f143', `Honeycomb (250g)`, 12, 'Honey', 'Honey', 'Pure honeycomb for chewing', 4.8, 45, 30, 'pack', 'Nigeria', 'honeycomb'),
       f('f144', `Manuka Honey (250g)`, 25, 'Honey', 'Honey', 'Premium Manuka honey from New Zealand', 4.9, 28, 15, 'jar', 'New Zealand', 'manuka-honey'),
 
@@ -245,7 +245,7 @@ export const allProducts: Product[] = [
       f('f158', `Chin Chin (500g)`, 4, 'Snacks', 'Snacks', 'Crunchy fried chin chin snack', 4.5, 61, 100, 'pack', 'Nigeria', 'chin-chin'),
 
       // Frozen Foods
-      f('f159', `Frozen Mixed Vegetables (2kg)`, 8, 'Frozen Foods', 'Frozen', 'Mixed vegetables peas carrots corn green beans', 4.5, 43, 70, 'pack', 'Nigeria', 'frozen-vegetables'),
+      f('f159', `Frozen Mixed Vegetables (2kg)`, 8, 'Frozen Foods', 'Frozen', 'Mixed vegetables, peas, carrots, corn, and green beans', 4.5, 43, 70, 'pack', 'Nigeria', 'frozen-vegetables'),
       f('f160', `Frozen Chicken Wings (2kg)`, 10, 'Frozen Foods', 'Frozen', 'Frozen chicken wings ready to cook', 4.6, 52, 50, 'pack', 'Brazil', 'frozen-chicken'),
       f('f161', `Frozen Fish (2kg)`, 12, 'Frozen Foods', 'Frozen', 'Frozen mackerel fish', 4.5, 38, 60, 'pack', 'Nigeria', 'frozen-fish'),
       f('f162', `Frozen Pizza (Margherita)`, 10, 'Frozen Foods', 'Frozen', 'Frozen margherita pizza ready to bake', 4.4, 29, 40, 'piece', 'Nigeria', 'frozen-pizza'),
