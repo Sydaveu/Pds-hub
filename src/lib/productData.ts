@@ -21,7 +21,8 @@ import { getProductImage } from './productImages';
 const PI = '\u03c0';
 const IMG = (id: string, kw: string) => getProductImage(id, kw);
 
-export const allProducts: Product[] = [
+// Base static dictionary representing standard fallback data
+const baseProductsArray: Product[] = [
   // ═══════════════════════════════════════════
   // FOOD CATEGORY
   // ═══════════════════════════════════════════
@@ -31,7 +32,7 @@ export const allProducts: Product[] = [
        image: IMG(id, imgKw), description: desc, rating, reviews, stock, unit, origin, isFeatured: featured,
       searchTags: tags ?? [category.toLowerCase(), sub.toLowerCase(), ...name.toLowerCase().split(' ')]
     });
-    const r = [
+    return [
       // Rice
       f('f001', `Premium Long Grain Rice (25kg)`, 15, 'Rice', 'Grains', 'High-quality long grain rice aged for optimal flavor', 4.8, 124, 50, 'bag', 'Northern Nigeria', 'rice'),
       f('f002', `Basmati Rice (10kg)`, 22, 'Rice', 'Grains', 'Premium aromatic basmati rice with long slender grains', 4.9, 89, 30, 'bag', 'Northern Nigeria', 'basmati-rice'),
@@ -235,7 +236,7 @@ export const allProducts: Product[] = [
       f('f150', `Seasoning Cubes (50 pack)`, 3, 'Spices', 'Spices', 'Popular seasoning cubes for flavor', 4.4, 92, 200, 'pack', 'Nigeria', 'seasoning'),
       f('f151', `Turmeric Powder (200g)`, 4, 'Spices', 'Spices', 'Pure ground turmeric', 4.6, 25, 70, 'pack', 'India', 'turmeric'),
       f('f152', `Cinnamon Sticks (100g)`, 5, 'Spices', 'Spices', 'Aromatic cinnamon bark sticks', 4.5, 22, 60, 'pack', 'Sri Lanka', 'cinnamon'),
-      f('f153', `Nutmeg (whole 100g)`, 6, 'Spices', 'Spices', 'Whole nutmeg seeds for fresh grating', 4.6, 19, 40, 'pack', 'Nigeria', 'nutmeg'),
+      f('f153', `Nutmeg (whole 100g)`, 6, 'Spices', 'Spices', 'Whole nutmeg seeds for fresh grading', 4.6, 19, 40, 'pack', 'Nigeria', 'nutmeg'),
 
       // Snacks
       f('f154', `Assorted Cakes (1kg)`, 12, 'Cakes', 'Bakery', 'Mixed cake selection for parties', 4.7, 68, 30, 'kg', 'Nigeria', 'cake'),
@@ -255,7 +256,6 @@ export const allProducts: Product[] = [
       f('f164', `Organic Fruit Basket`, 25, 'Organic Foods', 'Fresh Produce', 'Premium organic fruit selection', 4.8, 28, 20, 'box', 'Nigeria', 'organic-fruits'),
       f('f165', `Organic Eggs (12pcs)`, 6, 'Organic Foods', 'Fresh Produce', 'Free-range organic eggs', 4.7, 44, 40, 'tray', 'Nigeria', 'organic-eggs'),
     ];
-    return r;
   })(),
 
   // ═══════════════════════════════════════════
@@ -415,6 +415,24 @@ export const allProducts: Product[] = [
   })(),
 ];
 
+// Reactive in-memory mapping to support dynamic overrides safely
+const liveProductDatabase = new Map<string, Product>(
+  baseProductsArray.map(prod => [prod.id, { ...prod }])
+);
+
+// Helper function to update runtime fields (e.g., pricing or stock adjustments)
+export function updateProductPrice(id: string, newPrice: number): boolean {
+  const item = liveProductDatabase.get(id);
+  if (item) {
+    item.price = newPrice;
+    return true;
+  }
+  return false;
+}
+
+// Re-compile dynamic array export to maintain backwards compatibility with existing UI files
+export const allProducts: Product[] = Array.from(liveProductDatabase.values());
+
 export const mainCategories = [
   { id: 'food', name: 'FOOD', icon: '🌾', description: 'Grains, fresh produce, prepared meals, spices, and global foods', color: 'from-green-600 to-emerald-800' },
   { id: 'tools', name: 'TOOLS', icon: '🔧', description: 'Farm tools, machinery, processing equipment, and modern farming tech', color: 'from-amber-600 to-orange-800' },
@@ -422,36 +440,36 @@ export const mainCategories = [
 ] as const;
 
 export function getProductsByMainCategory(mainCat: string): Product[] {
-  return allProducts.filter(p => p.mainCategory === mainCat);
+  return Array.from(liveProductDatabase.values()).filter(p => p.mainCategory === mainCat);
 }
 
 export function getProductsByCategory(mainCat: string, cat: string): Product[] {
-  return allProducts.filter(p => p.mainCategory === mainCat && p.category.toLowerCase() === cat.toLowerCase());
+  return Array.from(liveProductDatabase.values()).filter(p => p.mainCategory === mainCat && p.category.toLowerCase() === cat.toLowerCase());
 }
 
 export function getFeaturedProducts(): Product[] {
-  return allProducts.filter(p => p.isFeatured);
+  return Array.from(liveProductDatabase.values()).filter(p => p.isFeatured);
 }
 
 export function getProductById(id: string): Product | undefined {
-  return allProducts.find(p => p.id === id);
+  return liveProductDatabase.get(id);
 }
 
 export function getRelatedProducts(product: Product, limit = 4): Product[] {
-  return allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, limit);
+  return Array.from(liveProductDatabase.values()).filter(p => p.category === product.category && p.id !== product.id).slice(0, limit);
 }
 
 export function getAllSubcategories(mainCat: string): string[] {
-  return [...new Set(allProducts.filter(p => p.mainCategory === mainCat).map(p => p.category))];
+  return [...new Set(Array.from(liveProductDatabase.values()).filter(p => p.mainCategory === mainCat).map(p => p.category))];
 }
 
 export function getAllCategories(): string[] {
-  return [...new Set(allProducts.map(p => p.category))];
+  return [...new Set(Array.from(liveProductDatabase.values()).map(p => p.category))];
 }
 
 export function getAllSearchableTexts(): string[] {
   const set = new Set<string>();
-  for (const p of allProducts) {
+  for (const p of Array.from(liveProductDatabase.values())) {
     set.add(p.name);
     set.add(p.category);
     set.add(p.subcategory);
